@@ -48,6 +48,40 @@
 
 <script>
 export default {
-  name: 'app',
+  name: 'Login',
 };
 </script>
+
+<style>
+.navbar {
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: #eaeaea;
+  display: flex;
+  gap: 5965px;
+  height: 86px;
+  overflow: hidden;
+  width: 1442px;
+}
+
+.rstorm {
+  color: var(--black);
+  font-family: var(--font-family- roboto);
+  font-size: var(--font-size-m);
+  font-weight: 400;
+  height: 19px;
+  letter-spacing: 0.8px;
+  line-height: normal;
+  margin-left: 90px;
+  margin-top: 5px;
+  min-width: 75px;
+  text-shadow: 0px 4px 4px #00000040;
+}
+.emoji {
+  align-self: flex-end;
+  height: 40px;
+  margin-bottom: -926px;
+  width: 40px;
+}
+</style>
