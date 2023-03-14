@@ -14,11 +14,8 @@ import TheWelcome from './components/TheWelcome.vue';
     />
 
     <div class="wrapper">
-      <<<<<<< Updated upstream
       <HelloWorld msg="You did it! changed both" />
-      =======
       <HelloWorld msg="You did it!" />
-      >>>>>>> Stashed changes
     </div>
   </header>
 
