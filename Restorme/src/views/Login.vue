@@ -4,34 +4,25 @@
       <div class="loginDetails">
         <form @submit.prevent="login">
           <h2 class="mb-3">Welcome!</h2>
-          <h3>It is great to see you back</h3>
+          <p>It is great to see you back</p>
           <div class="input">
-            <label for="email">Email address</label>
-            <input
-              class="form-control"
-              type="text"
-              name="email"
-              placeholder="email@adress.com"
-            />
+            <label for="email">Email </label>
+            <input type="email" name="email" placeholder="" /> <br />
+            <label for="password">Password </label>
+            <input type="password" name="password" placeholder="" /> <br />
           </div>
-          <div class="input">
-            <label for="password">Password</label>
-            <input
-              class="form-control"
-              type="password"
-              name="password"
-              placeholder="password123"
-            />
-          </div>
-
+          <br />
+          <br />
           <button type="submit" class="mt-4 btn-pers" id="login_button">
             Login
           </button>
-          <div class="alternative-option mt-4">
+          <br />
+          <br />
+          <button class="alternative-option mt-4">
             <span @click="moveToRegister"
               >Don't have an account? Register here!</span
             >
-          </div>
+          </button>
         </form>
       </div>
     </div>
@@ -112,5 +103,16 @@ export default {
 
 .loginDetails {
   padding: 20px;
+}
+
+.input {
+  display: inline-block;
+  text-align: right;
+}
+
+form {
+  text-align: center;
+  align-items: center;
+  margin: auto;
 }
 </style>
