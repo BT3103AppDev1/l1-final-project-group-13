@@ -4,34 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
 const db = getFirestore(firebaseApp);
 
-export default {
-    methods: {
-        async savetofs() {
-            console.log("IN AC")
 
-            let title = document.getElementById("title").value
-            let role = document.getElementById("role").value
-            let location = document.getElementById("location").value
-            let expLevel = document.getElementById("expLevel").value
-            let addInfo = document.getElementById("addInfo").value
-
-            alert(" Saving your data for resume : " + title)
-
-            try{
-                const docRef = await setDoc(doc(db, "Portfolio", title),{
-                    Title: title, Role: role, Location: location, ExperienceLevel: expLevel, AdditionalInfo: addInfo
-                })
-                console.log(docRef)
-                document.getElementById('userForm').reset();
-                this.$emit("added")
-            }
-            catch(error) {
-                console.error("Error adding document: ", error);
-            }
-        }
-    }
-        
-}
 </script>
 
 <template>
@@ -54,9 +27,11 @@ export default {
                     <label for = "addInfo"> Additional Information:</label>
                     <input type = "number" id = "addInfo" required = "" placeholder="Additional Information"> <br><br>
         
-                    <button id = "savebutton" type ="button" v-on:click = "savetofs()"> Save</button><br><br>
+                    <button id = "savebutton" type ="button" > Save</button><br><br>
                 </form>    
 </template>
+
+<!--<button id = "savebutton" type ="button" v-on:click = "savetofs()"> Save</button><br><br></br>-->
 
 <style scoped>
 h1{
