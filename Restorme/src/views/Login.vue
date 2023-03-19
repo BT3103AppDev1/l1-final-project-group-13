@@ -1,34 +1,49 @@
 <template>
   <div class="container">
-    <form @submit.prevent="login">
-      <h2 class="mb-3">Login</h2>
-      <div class="input">
-        <label for="email">Email address</label>
-        <input
-          class="form-control"
-          type="text"
-          name="email"
-          placeholder="email@adress.com"
+    <div class="loginContainer">
+      <div class="loginDetails">
+        <form @submit.prevent="login">
+          <h2 class="mb-3">Welcome!</h2>
+          <h3>It is great to see you back</h3>
+          <div class="input">
+            <label for="email">Email address</label>
+            <input
+              class="form-control"
+              type="text"
+              name="email"
+              placeholder="email@adress.com"
+            />
+          </div>
+          <div class="input">
+            <label for="password">Password</label>
+            <input
+              class="form-control"
+              type="password"
+              name="password"
+              placeholder="password123"
+            />
+          </div>
+
+          <button type="submit" class="mt-4 btn-pers" id="login_button">
+            Login
+          </button>
+          <div class="alternative-option mt-4">
+            <span @click="moveToRegister"
+              >Don't have an account? Register here!</span
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="loginBackgroundContainer">
+      <div id="backgroundImage">
+        <img
+          src="../assets/login background.png"
+          alt="Login Background"
+          id="backgroundImage"
         />
       </div>
-      <div class="input">
-        <label for="password">Password</label>
-        <input
-          class="form-control"
-          type="password"
-          name="password"
-          placeholder="password123"
-        />
-      </div>
-      <div class="alternative-option mt-4">
-        <span @click="moveToRegister"
-          >Don't have an account? Register here!</span
-        >
-      </div>
-      <button type="submit" class="mt-4 btn-pers" id="login_button">
-        Login
-      </button>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -67,3 +82,35 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #ededed;
+}
+.loginContainer {
+  flex: 2;
+  /* background-color: yellow; */
+  align-self: center;
+  margin-left: 70px;
+}
+.loginBackgroundContainer {
+  flex: 3;
+  margin-top: 50px;
+  margin-left: 90px;
+  /* background-color: green; */
+}
+
+#backgroundImage {
+  width: 90%;
+  height: 90%;
+}
+
+.loginDetails {
+  padding: 20px;
+}
+</style>

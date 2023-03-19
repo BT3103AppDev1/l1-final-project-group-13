@@ -10,16 +10,8 @@ export default {
 };
 </script>
 <template>
-  <div class="app-header">
-    <header>
-      <Navbar />
-    </header>
-  </div>
-  <div>
-    <main class="container">
-      <router-view />
-    </main>
-  </div>
+  <Navbar />
+  <router-view />
   <!-- <nav>
     <router-link to="/register">
       Don't have an account? Register here!
