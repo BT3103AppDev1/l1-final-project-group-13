@@ -12,10 +12,5 @@ export default {
 <template>
   <Navbar />
   <router-view />
-  <!-- <nav>
-    <router-link to="/register">
-      Don't have an account? Register here!
-    </router-link>
-  </nav> -->
 </template>
 <style scoped></style>
