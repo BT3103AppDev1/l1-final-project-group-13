@@ -39,7 +39,8 @@
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase.js';
 export default {
   data() {
     return {
@@ -51,7 +52,6 @@ export default {
     login(submitEvent) {
       this.email = submitEvent.target.elements.email.value;
       this.password = submitEvent.target.elements.password.value;
-      const auth = getAuth();
       signInWithEmailAndPassword(auth, this.email, this.password)
         .then(() => {
           console.log('Successfully logged in');
