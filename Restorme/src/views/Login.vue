@@ -18,12 +18,13 @@
           </button>
           <br />
           <br />
-          <button class="alternative-option mt-4">
-            <span @click="moveToRegister"
-              >Don't have an account? Register here!</span
-            >
-          </button>
         </form>
+      </div>
+      <div id="movetoRegisterButton">
+        <p>Don't have an account?</p>
+        <button class="alternative-option mt-4" @click="moveToRegister">
+          <span>Register</span>
+        </button>
       </div>
     </div>
     <div class="loginBackgroundContainer">
@@ -108,6 +109,13 @@ export default {
 form {
   text-align: center;
   align-items: center;
+  margin: auto;
+}
+
+#movetoRegisterButton {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
   margin: auto;
 }
 </style>

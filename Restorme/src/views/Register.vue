@@ -51,26 +51,27 @@ const password = ref('');
 const register = () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .then((data) => {
-      console.log('Successfully Registered');
+      console.log(email.value, 'Successfully Registered');
+      alert("You've successfully registered!");
       router.push('./Home');
+      try {
+        const docRef = addDoc(collection(db, 'users'), {
+          Email: email.value,
+          Name: null,
+          Age: null,
+          Biography: null,
+          Experience: null,
+          SocialMediaLinks: null,
+        });
+        console.log('Document written with ID: ', docRef.id);
+      } catch (e) {
+        console.error('Error adding document: ', e);
+      }
     })
     .catch((error) => {
       console.log(error.code);
       alert(error.message);
     });
-  try {
-    const docRef = addDoc(collection(db, 'users'), {
-      Email: email.value,
-      Name: null,
-      Age: null,
-      Biography: null,
-      Experience: null,
-      SocialMediaLinks: null,
-    });
-    console.log('Document written with ID: ', docRef.id);
-  } catch (e) {
-    console.error('Error adding document: ', e);
-  }
 };
 </script>
 
