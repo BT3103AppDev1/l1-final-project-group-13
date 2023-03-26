@@ -48,7 +48,7 @@ import { auth, db } from '../firebase.js';
 const router = useRouter();
 const email = ref('');
 const password = ref('');
-const register = () => {
+const register = async () => {
   createUserWithEmailAndPassword(auth, email.value, password.value)
     .then((data) => {
       console.log(email.value, 'Successfully Registered');
