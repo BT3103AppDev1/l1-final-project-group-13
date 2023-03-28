@@ -28,7 +28,9 @@
             <p>• Frontend mobile engineer</p>
           </div>
         </div>
-        <div id="pdfContainer">pdf</div>
+        <div id="pdfContainer">
+          <vue-pdf-embed :source="pdfSource" />
+        </div>
       </div>
       <div id="commentsContainer">comments</div>
     </div>
@@ -36,7 +38,8 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import VuePdfEmbed from 'vue-pdf-embed';
 
 export default {
   name: 'Home',
@@ -44,7 +47,12 @@ export default {
     return {
       user: false,
       numOfResumesUploaded: 2,
+      pdfSource: '../src/assets/ResumeTemplate.pdf',
     };
+  },
+
+  components: {
+    VuePdfEmbed,
   },
 
   mounted() {
@@ -130,7 +138,11 @@ export default {
 
 #pdfContainer {
   flex: 3.5;
-  background-color: rgb(0, 0, 255);
+  /* background-color: rgb(0, 0, 255); */
+  overflow-y: scroll;
+  width: 100%;
+  border: 2px solid black;
+  /* padding: 10px; */
 }
 
 #commentsContainer {
