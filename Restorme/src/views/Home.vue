@@ -32,7 +32,15 @@
           <vue-pdf-embed :source="pdfSource" />
         </div>
       </div>
-      <div id="commentsContainer">comments</div>
+      <div id="commentsContainer">
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+        <Comment />
+      </div>
     </div>
   </div>
 </template>
@@ -40,6 +48,7 @@
 <script>
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
+import Comment from '../components/Comment.vue';
 
 export default {
   name: 'Home',
@@ -53,6 +62,7 @@ export default {
 
   components: {
     VuePdfEmbed,
+    Comment,
   },
 
   mounted() {
@@ -74,7 +84,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width: 100vw;
+  width: 98vw;
 }
 
 #routerContainer {
@@ -147,9 +157,12 @@ export default {
 
 #commentsContainer {
   flex: 2;
-  background-color: rgb(0, 242, 255);
+  /* background-color: rgb(0, 242, 255); */
   align-self: center;
   height: 95vh;
-  margin-top: 60px;
+  margin-top: 80px;
+  padding: 20px;
+  justify-content: center;
+  overflow-y: scroll;
 }
 </style>
