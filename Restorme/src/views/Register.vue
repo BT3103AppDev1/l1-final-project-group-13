@@ -15,6 +15,9 @@
           </div>
           <br />
           <br />
+          <button class="alternative-option mt-4" style="margin-right: 20px">
+            <span @click="backToLogin">Back</span>
+          </button>
           <button class="alternative-option mt-4">
             <span @click="register">Submit</span>
           </button>
@@ -72,6 +75,10 @@ const register = async () => {
       console.log(error.code);
       alert(error.message);
     });
+};
+
+const backToLogin = () => {
+  router.push('./');
 };
 </script>
 
