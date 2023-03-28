@@ -13,19 +13,33 @@
             </div>
           </div>
           <div id="scrollViewOfResumesContainer">
-            <p>• Full stack software engineer</p>
-            <p>• Database administrator</p>
-            <p>• Product manager</p>
-            <p>• Data analyst</p>
-            <p>• Financial Analyst</p>
-            <p>• Data scientist</p>
-            <p>• Cloud engineer</p>
-            <p>• Cloud architect</p>
-            <p>• Frontend mobile engineer</p>
-            <p>• Frontend mobile engineer</p>
-            <p>• Frontend mobile engineer</p>
-            <p>• Frontend mobile engineer</p>
-            <p>• Frontend mobile engineer</p>
+            <button>Full stack software engineer</button>
+            <br />
+            <br />
+            <button>Database administrator</button>
+            <br />
+            <br />
+            <button>Product manager</button>
+            <br />
+            <br />
+            <button>Data analyst</button>
+            <br />
+            <br />
+            <button>Financial Analyst</button>
+            <br />
+            <br />
+            <button>Data scientist</button>
+            <br />
+            <br />
+            <button>Cloud engineer</button>
+            <br />
+            <br />
+            <button>Cloud architect</button>
+            <br />
+            <br />
+            <button>Frontend mobile engineer</button>
+            <br />
+            <br />
           </div>
         </div>
         <div id="pdfContainer">
@@ -142,7 +156,7 @@ export default {
 #scrollViewOfResumesContainer {
   flex: 3;
   /* background-color: rgb(255, 0, 212); */
-  margin-left: 40px;
+  margin-left: 20px;
   overflow-y: scroll;
 }
 
