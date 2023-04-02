@@ -44,6 +44,7 @@ import {
   collection,
   getDocs,
   addDoc,
+  setDoc,
   doc,
 } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
@@ -58,7 +59,7 @@ const register = async () => {
       alert("You've successfully registered!");
       router.push('./Home');
       try {
-        const docRef = addDoc(collection(db, 'users'), {
+        const docRef = setDoc(doc(db, 'users', email.value), {
           Email: email.value,
           Name: null,
           Age: null,
