@@ -48,12 +48,6 @@
       </div>
       <div id="commentsContainer">
         <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
       </div>
     </div>
   </div>
