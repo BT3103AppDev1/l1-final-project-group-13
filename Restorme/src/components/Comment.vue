@@ -77,7 +77,7 @@ export default {
          * MARKED USEFUL / 
          * REPLIES - TBC
          */
-         let resume_id = resumeID;
+        let resume_id = resumeID;
         let comment  = document.getElementById("Description").value;
         let category = document.getElementById("category");
         let categoryValue  = category.value
