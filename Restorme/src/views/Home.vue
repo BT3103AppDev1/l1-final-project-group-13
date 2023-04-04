@@ -1,4 +1,4 @@
-<template>
++<template>
   <div v-if="numOfResumesUploaded">
     <div id="homeContainer">
       <div id="routerContainer">router</div>
@@ -6,10 +6,20 @@
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
             <div id="resumeHeader">
-              <h3>Your Resumes</h3>
+              <h3>Your Resumes</h3> <br><br>
             </div>
             <div id="uploadResumeButtonContainer">
-              <button id="uploadResumeButton">Upload Resume (.pdf)</button>
+              <input type="file" ref="myfile" /> <br /><br />
+              <input
+                type="text"
+                placeholder="Enter job title here..."
+                id="myInput"
+              />
+              <br /><br />
+
+              <button @click="upload" id="uploadResumeButton">
+                Upload Resume (.pdf)
+              </button>
             </div>
           </div>
           <div id="scrollViewOfResumesContainer">
@@ -17,27 +27,6 @@
             <br />
             <br />
             <button>Database administrator</button>
-            <br />
-            <br />
-            <button>Product manager</button>
-            <br />
-            <br />
-            <button>Data analyst</button>
-            <br />
-            <br />
-            <button>Financial Analyst</button>
-            <br />
-            <br />
-            <button>Data scientist</button>
-            <br />
-            <br />
-            <button>Cloud engineer</button>
-            <br />
-            <br />
-            <button>Cloud architect</button>
-            <br />
-            <br />
-            <button>Frontend mobile engineer</button>
             <br />
             <br />
           </div>
@@ -54,23 +43,28 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import VuePdfEmbed from 'vue-pdf-embed';
-import Comment from '../components/Comment.vue';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import VuePdfEmbed from "vue-pdf-embed";
+import Comment from "../components/Comment.vue";
+import { storage } from "../firebase";
+import { ref, uploadBytes } from "firebase/storage";
+import Login from "@/views/Login.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
   data() {
     return {
       user: false,
       numOfResumesUploaded: 2,
-      pdfSource: '../src/assets/ResumeTemplate.pdf',
+      email: "",
+      pdfSource: "../src/assets/ResumeTemplate.pdf",
     };
   },
 
   components: {
     VuePdfEmbed,
     Comment,
+    Login,
   },
 
   mounted() {
@@ -78,10 +72,27 @@ export default {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
+        this.email = user.email;
       } else {
         this.user = false;
       }
     });
+  },
+
+  methods: {
+    upload: function () {
+      const folder = String(this.email);
+      var jobTitle = document.getElementById("myInput").value;
+
+      const final_path = folder + "/" + String(jobTitle);
+      const storageRef = ref(storage, final_path);
+
+      alert(jobTitle);
+      uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
+        console.log("uploaded!");
+        window.location.reload();
+      });
+    },
   },
 };
 </script>
