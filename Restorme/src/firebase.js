@@ -26,4 +26,7 @@ auth.setPersistence(browserSessionPersistence);
 
 const db = getFirestore(app);
 
-export { auth, db };
+import { getStorage, getStream } from "firebase/storage";
+const storage = getStorage(app);
+
+export { auth, db, storage };
