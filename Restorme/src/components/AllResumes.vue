@@ -5,6 +5,7 @@
         <button class = "filterButtons">Starred Resumes</button>
     </div>
     <div class = "overflow-scroll" id = "resumeListContainer">
+        <br/>
         <ul class = "resumeList">
             <li v-for="value in values" :key="value.resume_id">
                 <div class = "resumeContainer">
