@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@coreui/vue": "^4.7.0",
+    "@popperjs/core": "^2.11.7",
     "bootstrap": "^5.2.3",
     "bootstrap-vue": "^2.23.1",
     "firebase": "^9.17.2",

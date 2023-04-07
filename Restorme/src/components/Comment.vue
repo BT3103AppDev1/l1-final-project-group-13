@@ -6,13 +6,18 @@
       <div class="vote">-</div>
     </div>
     <div id="contentContainer">
-      <div id="userDetailsContainer">test002@gmail.com</div>
+      <div id = "topHalfContent">
+        <div id="userDetailsContainer">test002@gmail.com</div>
+        <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
+        <button id = "replyButton">Reply</button>
+      </div>
       <div id="commentDetailsContainer">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
         maiores nemo, distinctio, modi consequuntur dolorem velit doloribus iure
         illum rem voluptatum est, enim commodi cumque corporis pariatur quaerat
         dicta.
       </div>
+
     </div>
   </div>
 
@@ -53,7 +58,10 @@ import { auth } from "../firebase";
 import { db } from "../firebase";
 import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
+import { IconsPlugin } from 'bootstrap-vue';
+import Vue from 'vue'
 
+Vue.use(IconsPlugin);
 
 export default {
   methods: {
@@ -241,6 +249,12 @@ select {
   /* background-color: rgb(255, 0, 0); */
 }
 
+#topHalfContent {
+  border: solid;
+  display: flex;
+  flex-direction: row;
+}
+
 @font-face {
   font-family: 'Rubik-Regular';
   src: local('Rubik-Regular');
@@ -269,5 +283,15 @@ select {
   font-family: Rubik-Regular;
   font-weight: medium;
   margin-bottom: 5px;
+}
+
+#replyButton {
+  width: 15%;
+  font-size: 80%;
+  border: none;
+  height: 100%;
+  padding-top: 5%;
+  padding-right: 15%;
+  background-color: white;
 }
 </style>
