@@ -8,8 +8,12 @@
     <div id="contentContainer">
       <div id = "topHalfContent">
         <div id="userDetailsContainer">test002@gmail.com</div>
-        <b-icon icon="gear-fill" aria-hidden="true"></b-icon>
-        <button id = "replyButton">Reply</button>
+        <button id = "replyButton" v-on:click="component = 'reply-input'">
+          <div style = "padding-bottom: 10%">
+            <ReplyIcon/>
+          </div>
+          <p style = "margin-left: 8%">Reply</p>
+        </button>
       </div>
       <div id="commentDetailsContainer">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
@@ -20,6 +24,7 @@
 
     </div>
   </div>
+  <component v-bind:is = "component" @remove = "cancelComment()"></component>
 
   <div class="container">
     <form id="myform">
@@ -58,12 +63,23 @@ import { auth } from "../firebase";
 import { db } from "../firebase";
 import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
-import { IconsPlugin } from 'bootstrap-vue';
-import Vue from 'vue'
-
-Vue.use(IconsPlugin);
+import ReplyIcon from "../assets/ReplyIcon.vue"
+import ReplyInput from "./ReplyInput.vue";
 
 export default {
+  components: {
+    ReplyIcon,
+    "reply-input":ReplyInput
+  },
+
+  data() {
+    return {
+      component: null,
+      comment_id: "AGEeFQOAGfpxxrlEdkjl",
+      comment_user: "test002@gmail.com"
+    }
+  },
+
   methods: {
     
     async saveCommentToFS(resumeID) {
@@ -128,6 +144,9 @@ export default {
         console.error("Error adding document: ", error);
     }
 
+    },
+    cancelComment() {
+      this.component = null;
     }
   }
 }
@@ -250,7 +269,6 @@ select {
 }
 
 #topHalfContent {
-  border: solid;
   display: flex;
   flex-direction: row;
 }
@@ -286,12 +304,14 @@ select {
 }
 
 #replyButton {
-  width: 15%;
+  width: 25%;
   font-size: 80%;
-  border: none;
-  height: 100%;
-  padding-top: 5%;
-  padding-right: 15%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 5%;
+  margin-right: 5%;
   background-color: white;
+  border: none;
 }
 </style>
