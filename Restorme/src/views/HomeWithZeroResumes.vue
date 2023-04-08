@@ -1,27 +1,44 @@
 <template>
-  <div id="homeWithZeroResumesContainer">
-    <div id="routerContainer">
-      <SidebarRouter />
-    </div>
-    <div id="contentContainer">
-      <br />
-      Home with zero resumes
+  <div v-if="user">
+    <div id="HomeWithZeroResumesContainer">
+      <div id="routerContainer">
+        <SidebarRouter />
+      </div>
+      <div id="contentContainer">
+        <ResumeInputs />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import ResumeInputs from '../components/ResumeInputs.vue';
 import SidebarRouter from '../components/SidebarRouter.vue';
+
 export default {
   name: 'HomeWithZeroResumes',
-  components: {
-    SidebarRouter,
+  data() {
+    return {
+      user: false,
+    };
   },
+  mounted() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+      } else {
+        this.user = false;
+      }
+    });
+  },
+  components: { ResumeInputs, SidebarRouter },
 };
 </script>
 
 <style>
-#homeWithZeroResumesContainer {
+#HomeWithZeroResumesContainer {
   display: flex;
   justify-content: center;
   align-items: center;
