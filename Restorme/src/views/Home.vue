@@ -1,12 +1,15 @@
-+<template>
+<template>
   <div v-if="numOfResumesUploaded">
     <div id="homeContainer">
-      <div id="routerContainer">router</div>
+      <div id="routerContainer">
+        <SidebarRouter />
+      </div>
       <div id="resumeContainer">
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
             <div id="resumeHeader">
-              <h3>Your Resumes</h3> <br><br>
+              <h3>Your Resumes</h3>
+              <br /><br />
             </div>
             <div id="uploadResumeButtonContainer">
               <input type="file" ref="myfile" /> <br /><br />
@@ -43,21 +46,23 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import VuePdfEmbed from "vue-pdf-embed";
-import Comment from "../components/Comment.vue";
-import { storage } from "../firebase";
-import { ref, uploadBytes } from "firebase/storage";
-import Login from "@/views/Login.vue";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import VuePdfEmbed from 'vue-pdf-embed';
+import Comment from '../components/Comment.vue';
+import { storage } from '../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
+import Login from '@/views/Login.vue';
+import SidebarRouter from '../components/SidebarRouter.vue';
+import Profile from './Profile.vue';
 
 export default {
-  name: "Home",
+  name: 'Home',
   data() {
     return {
       user: false,
       numOfResumesUploaded: 2,
-      email: "",
-      pdfSource: "../src/assets/ResumeTemplate.pdf",
+      email: '',
+      pdfSource: '../src/assets/ResumeTemplate.pdf',
     };
   },
 
@@ -65,6 +70,8 @@ export default {
     VuePdfEmbed,
     Comment,
     Login,
+    SidebarRouter,
+    Profile,
   },
 
   mounted() {
@@ -82,14 +89,14 @@ export default {
   methods: {
     upload: function () {
       const folder = String(this.email);
-      var jobTitle = document.getElementById("myInput").value;
+      var jobTitle = document.getElementById('myInput').value;
 
-      const final_path = folder + "/" + String(jobTitle);
+      const final_path = folder + '/' + String(jobTitle);
       const storageRef = ref(storage, final_path);
 
       alert(jobTitle);
       uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
-        console.log("uploaded!");
+        console.log('uploaded!');
         window.location.reload();
       });
     },
@@ -108,7 +115,7 @@ export default {
 
 #routerContainer {
   flex: 1;
-  background-color: yellow;
+  /* background-color: yellow; */
   align-self: center;
   height: 95vh;
   margin-top: 60px;
