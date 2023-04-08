@@ -1,47 +1,47 @@
 <template>
-  <div id="resumesContainer">
-    <div id="routerContainer">
-      <SidebarRouter />
+  <div v-if="user">
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="resumeComponents">
+      <FilterResumes />
     </div>
-    <div id="contentContainer">
-      <br />
-      Resumes
+    <div class="resumeComponents">
+      <AllResumes />
     </div>
   </div>
 </template>
 
 <script>
-import SidebarRouter from '../components/SidebarRouter.vue';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import AllResumes from '../components/AllResumes.vue';
+import FilterResumes from '../components/FilterResumes.vue';
+
 export default {
   name: 'Resumes',
-  components: {
-    SidebarRouter,
+  data() {
+    return {
+      user: false,
+    };
   },
+  mounted() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+      } else {
+        this.user = false;
+      }
+    });
+  },
+  components: { AllResumes, FilterResumes },
+  props: ['resume'],
 };
 </script>
 
-<style>
-#resumesContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 98vw;
-}
-#routerContainer {
-  flex: 1;
-  /* background-color: yellow; */
-  align-self: center;
-  height: 95vh;
-  margin-top: 60px;
-}
-#contentContainer {
-  flex: 4.5;
-  /* background-color: rgb(0, 255, 0); */
-  align-self: center;
-  height: 95vh;
-  margin-top: 60px;
-  display: flex;
-  flex-direction: column;
+<style scoped>
+.resumeComponents {
+  display: inline;
 }
 </style>
