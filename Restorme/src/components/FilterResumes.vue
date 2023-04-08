@@ -65,10 +65,10 @@ export default {
 
 <style>
 #FilterBarContainer {
-  border-style: solid;
+  /* border-style: solid; */
   width: 15%;
-  margin-left: 15%;
-  padding-left: 1%;
+  /* margin-left: 15%;
+  padding-left: 1%; */
   padding-right: 1%;
   padding-top: 1%;
   position: fixed;

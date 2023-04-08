@@ -162,11 +162,11 @@ export default {
 }
 
 .container {
-  margin-left: 30%;
+  margin-left: 15%;
   background-color: rgb(248, 248, 246);
   border-width: 0.5%;
   border-style: solid;
-  width: 70%;
+  width: 65%;
   position: fixed;
 }
 
@@ -180,6 +180,7 @@ export default {
 
 #resumeListContainer {
   height: 600px;
+  overflow-y: scroll;
 }
 
 .resumeList {
