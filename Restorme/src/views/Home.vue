@@ -1,7 +1,9 @@
-+<template>
+<template>
   <div v-if="numOfResumesUploaded">
     <div id="homeContainer">
-      <div id="routerContainer">router</div>
+      <div id="routerContainer">
+        <SidebarRouter />
+      </div>
       <div id="resumeContainer">
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
@@ -97,8 +99,8 @@ export default {
     return {
       user: false,
       numOfResumesUploaded: 2,
-      email: "",
-      pdfSource: "../src/assets/ResumeTemplate.pdf",
+      email: '',
+      pdfSource: '../src/assets/ResumeTemplate.pdf',
     };
   },
 
@@ -106,14 +108,16 @@ export default {
     VuePdfEmbed,
     Comment,
     Login,
+    SidebarRouter,
+    Profile,
   },
 
   methods: {
     upload: function () {
       const folder = String(this.email);
-      var jobTitle = document.getElementById("myInput").value;
+      var jobTitle = document.getElementById('myInput').value;
 
-      const final_path = folder + "/" + String(jobTitle);
+      const final_path = folder + '/' + String(jobTitle);
       const storageRef = ref(storage, final_path);
 
       alert('Confirm that you are uploading the resume for: ' + jobTitle);
@@ -139,7 +143,7 @@ export default {
 
 #routerContainer {
   flex: 1;
-  background-color: yellow;
+  /* background-color: yellow; */
   align-self: center;
   height: 95vh;
   margin-top: 60px;

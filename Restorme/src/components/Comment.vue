@@ -21,7 +21,6 @@
       <h2>Add Comments</h2>
 
       <div class="formli">
-
         <label for="commentType">Category:</label>
         <select id="category" v-model="selected">
           <option disabled value="">Please Select a Category</option>
@@ -34,95 +33,121 @@
         <br /><br />
 
         <label for="Description">Description: </label>
-        <textarea id="Description" rows="4" cols="50" placeholder="Enter your comment" required></textarea>
+        <textarea
+          id="Description"
+          rows="4"
+          cols="35"
+          placeholder="Enter your comment"
+          required
+        ></textarea>
         <br /><br />
 
-         <div class="save">
-          <button id="savebutton" type="button" v-on:click="saveCommentToFS(12345678)">
+        <div class="save">
+          <button
+            id="savebutton"
+            type="button"
+            v-on:click="saveCommentToFS(12345678)"
+          >
             Save
           </button>
-        </div> 
+        </div>
       </div>
     </form>
   </div>
-
 </template>
 
 <script>
-import { auth } from "../firebase";
-import { db } from "../firebase";
-import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
-
+import { auth } from '../firebase';
+import { db } from '../firebase';
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 export default {
   methods: {
-    
     async saveCommentToFS(resumeID) {
-      const commentCollection = collection(db, "Comment_Collection")
+      const commentCollection = collection(db, 'Comment_Collection');
       const user = auth.currentUser;
       const userUID = auth.currentUser.uid;
-        console.log("IN AC") 
+      console.log('IN AC');
 
-        /*
-         * A COMMENT SHOULD HAVE
-         * COMMENT_ID /
-         * COMMENT_TYPE /
-         * USER_UID / 
-         * RESUME_ID / 
-         * DATE / 
-         * DESCRIPTION (COMMENT) /
-         * NO. OF UPVOTES /
-         * NO. OF DOWNVOTES /
-         * MARKED USEFUL / 
-         * REPLIES - TBC
-         */
-        let resume_id = resumeID;
-        let comment  = document.getElementById("Description").value;
-        let category = document.getElementById("category");
-        let categoryValue  = category.value
-        let categoryText = category.options[category.selectedIndex].text;
+      /*
+       * A COMMENT SHOULD HAVE
+       * COMMENT_ID /
+       * COMMENT_TYPE /
+       * USER_UID /
+       * RESUME_ID /
+       * DATE /
+       * DESCRIPTION (COMMENT) /
+       * NO. OF UPVOTES /
+       * NO. OF DOWNVOTES /
+       * MARKED USEFUL /
+       * REPLIES - TBC
+       */
+      let resume_id = resumeID;
+      let comment = document.getElementById('Description').value;
+      let category = document.getElementById('category');
+      let categoryValue = category.value;
+      let categoryText = category.options[category.selectedIndex].text;
 
-        let currentdate = new Date();
-        let dateTime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-        //let uploadDate = Math.floor(Date.now() /1000)
+      let currentdate = new Date();
+      let dateTime =
+        currentdate.getDate() +
+        '/' +
+        (currentdate.getMonth() + 1) +
+        '/' +
+        currentdate.getFullYear() +
+        ' @ ' +
+        currentdate.getHours() +
+        ':' +
+        currentdate.getMinutes() +
+        ':' +
+        currentdate.getSeconds();
+      //let uploadDate = Math.floor(Date.now() /1000)
 
-        let upvotesNum = 0;
-        let downvotesNum = 0;
-        let markedUseful = false;
-        let replies = "to be confirmed";
+      let upvotesNum = 0;
+      let downvotesNum = 0;
+      let markedUseful = false;
+      let replies = 'to be confirmed';
 
+      alert(
+        ' Saving your data for Comment : ' +
+          comment +
+          categoryText +
+          dateTime +
+          userUID +
+          upvotesNum +
+          downvotesNum +
+          markedUseful +
+          replies
+      );
 
-    alert(" Saving your data for Comment : " + comment + categoryText + dateTime + 
-    userUID + upvotesNum + downvotesNum + markedUseful + replies) 
+      try {
+        const docRef = await addDoc(collection(db, 'Comments'), {
+          Comment_ID: '',
+          Resume_ID: resume_id,
+          Comment_Category: categoryText,
+          User: userUID,
+          Upload_Date: dateTime,
+          Description: comment,
+          Number_Of_Upvotes: upvotesNum,
+          Number_of_Downvotes: downvotesNum,
+          Marked_Useful: markedUseful,
+          Replies: replies,
+        });
 
-    try{
-      const docRef = await addDoc(collection(db, "Comments"),{
-        Comment_ID: "", Resume_ID: resume_id, Comment_Category: categoryText , User: userUID, Upload_Date: dateTime, 
-        Description : comment, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
-        Marked_Useful : markedUseful, Replies: replies
-      })
-
-      console.log(String(docRef.id))
-      const commentsRef = doc(db, "Comments", String(docRef.id))
-      await updateDoc(commentsRef, {
-        Comment_ID: String(docRef.id)
-      })
-      document.getElementById('myform').reset();
-      this.$emit("added")
+        console.log(String(docRef.id));
+        const commentsRef = doc(db, 'Comments', String(docRef.id));
+        await updateDoc(commentsRef, {
+          Comment_ID: String(docRef.id),
+        });
+        document.getElementById('myform').reset();
+        this.$emit('added');
+      } catch (error) {
+        console.error('Error adding document: ', error);
       }
-    catch(error) {
-        console.error("Error adding document: ", error);
-    }
-
-    }
-  }
-}
+    },
+  },
+};
 /* 
 
 export default {
@@ -163,7 +188,7 @@ export default {
 
 <style>
 h2 {
-  background-color:antiquewhite;
+  background-color: antiquewhite;
   align-items: center;
   text-align: center;
 }
@@ -185,12 +210,12 @@ input:hover {
   border-radius: 2px;
 }
 
-input[type="text"] {
+input[type='text'] {
   width: 20em;
 }
 
 select {
-  width: 20em;
+  width: 15em;
 }
 
 #comment {
