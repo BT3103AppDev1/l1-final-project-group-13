@@ -25,8 +25,14 @@
               </button>
             </div>
           </div>
-          <div id="scrollViewOfResumesContainer" v-for="(button, index) in resumeButtons" :key="index">
-            <button @click="downloadDoc(button.documentRef)"> {{ button.name }}</button>
+          <div
+            id="scrollViewOfResumesContainer"
+            v-for="(button, index) in resumeButtons"
+            :key="index"
+          >
+            <button @click="downloadDoc(button.documentRef)">
+              {{ button.name }}
+            </button>
           </div>
         </div>
         <div id="pdfContainer">
@@ -41,16 +47,18 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import VuePdfEmbed from "vue-pdf-embed";
-import Comment from "../components/Comment.vue";
-import { storage } from "../firebase";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import VuePdfEmbed from 'vue-pdf-embed';
+import Comment from '../components/Comment.vue';
+import { storage } from '../firebase';
 import { ref as ref2 } from 'vue';
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import Login from "@/views/Login.vue";
+import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
+import Login from '@/views/Login.vue';
+import SidebarRouter from '@/components/SidebarRouter.vue';
+import Profile from '@/views/Profile.vue';
 
 export default {
-  name: "Home",
+  name: 'Home',
 
   mounted() {
     const auth = getAuth();
@@ -68,26 +76,30 @@ export default {
     const resumeButtons = ref2([]);
 
     async function loadDocs() {
-      const bucketRef = ref(storage, "gs://restorme-cf3da.appspot.com/mattlim2000@gmail.com" );
+      const bucketRef = ref(
+        storage,
+        'gs://restorme-cf3da.appspot.com/mattlim2000@gmail.com'
+      );
       const docList = await listAll(bucketRef);
 
       docList.items.forEach((documentRef) => {
         const name = documentRef.name;
-        resumeButtons.value.push({ name, documentRef }); 
+        resumeButtons.value.push({ name, documentRef });
       });
     }
 
     async function downloadDoc(documentRef) {
       const requiredRef = ref(storage, documentRef.fullPath);
 
-      const url = getDownloadURL(requiredRef).then((url) => {
-        console.log(url);
-      }).catch((error) => {
-        console.error('error getting url:', error);
-      });
+      const url = getDownloadURL(requiredRef)
+        .then((url) => {
+          console.log(url);
+        })
+        .catch((error) => {
+          console.error('error getting url:', error);
+        });
 
       this.pdfSource = url;
-
     }
 
     loadDocs();
@@ -122,7 +134,7 @@ export default {
 
       alert('Confirm that you are uploading the resume for: ' + jobTitle);
       uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
-        console.log("uploaded!");
+        console.log('uploaded!');
         //window.location.reload();
       });
 
