@@ -8,7 +8,7 @@
           </div>
           <div id="commentDetailsContainer">
             <textarea id="replyDescription" rows="3" cols="35" placeholder="Enter your comment" required></textarea>
-            <button id = "saveReplyButton" v-on:click = "saveReply('AGEeFQOAGfpxxrlEdkjl')">Save</button>
+            <button id = "saveReplyButton" v-on:click = "saveReplyToFS(comment_id)">Save</button>
           </div>
 
         </div>
@@ -23,30 +23,18 @@ import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
 export default {
   name: 'ReplyInput',
-  props: ['comment_id', 'comment_user', 'component'],
+  props: ['comment_id'],
   methods: {
-    async saveReply(comment_ID) {
-      const commentDocument = doc(db, "Comments", comment_ID);
-      console.log(commentDocument);
-      //const user = auth.currentUser;
-      //const userUID = auth.currentUser.uid;
-      console.log("IN AC")
+    // async getReplyDescription() {
+    //   let reply_description = document.getElementById("replyDescription").value;
+    //   return reply_description;
+    // }
 
-      /*
-       * A COMMENT SHOULD HAVE
-       * COMMENT_ID /
-       * COMMENT_TYPE /
-       * USER_UID / 
-       * RESUME_ID / 
-       * DATE / 
-       * DESCRIPTION (COMMENT) /
-       * NO. OF UPVOTES /
-       * NO. OF DOWNVOTES /
-       * MARKED USEFUL / 
-       * REPLIES - TBC
-       */
+    async saveReplyToFS(comment_id) {
 
-      let comment = document.getElementById("replyDescription").value;
+      //const commentDocument = doc(db, "Comments", comment_id);
+      console.log(comment_id);
+      let reply_description = document.getElementById("replyDescription").value;
       let currentdate = new Date();
       let dateTime = currentdate.getDate() + "/"
         + (currentdate.getMonth() + 1) + "/"
@@ -54,37 +42,32 @@ export default {
         + currentdate.getHours() + ":"
         + currentdate.getMinutes() + ":"
         + currentdate.getSeconds();
-      //let uploadDate = Math.floor(Date.now() /1000)
 
       let upvotesNum = 0;
       let downvotesNum = 0;
       let markedUseful = false;
 
+      try {
+        const docRef = await addDoc(collection(db, "Comments", comment_id, "Reply_Collection"), {
+          Reply_ID: "", Comment_ID: comment_id, Upload_Date: dateTime,
+          Description: reply_description, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
+          Marked_Useful: markedUseful
+        })
 
-      // alert(" Saving your data for Comment : " + comment + categoryText + dateTime +
-      //   userUID + upvotesNum + downvotesNum + markedUseful + replies)
-
-      // try {
-      //   const docRef = await addDoc(collection(db, "Comments", comment_ID, "Replies"), {
-      //     Reply_ID: "", Comment_ID: comment_ID, Upload_Date: dateTime,
-      //     Description: comment, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
-      //     Marked_Useful: markedUseful
-      //   })
-
-      //   console.log(String(docRef.id))
-      //   const replyRef = doc(db, "Comments", comment_ID, "Replies", String(docRef.id))
-      //   await updateDoc(replyRef, {
-      //     Reply_ID: String(docRef.id)
-      //   })
-      //   document.getElementById('replyForm').reset();
-      //   this.$emit("added")
-      // }
-      // catch (error) {
-      //   console.error("Error adding document: ", error);
-      // }
-
+        console.log(String(docRef.id))
+        const replyRef = doc(db, "Comments", comment_id, "Reply_Collection", String(docRef.id))
+        await updateDoc(replyRef, {
+          Reply_ID: String(docRef.id)
+        })
+        document.getElementById('replyForm').reset();
+        this.$emit("added")
+      }
+      catch (error) {
+        console.error("Error adding document: ", error);
+      }
     }
   }
+
 }
 </script>
 

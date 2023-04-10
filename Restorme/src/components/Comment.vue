@@ -1,4 +1,5 @@
 <template>
+  <li id = "commentsList" v-for= "comment in commentCollection" >
   <div id="comment">
     <div id="votesContainer">
       <div class="vote">+</div>
@@ -7,7 +8,7 @@
     </div>
     <div id="contentContainer">
       <div id = "topHalfContent">
-        <div id="userDetailsContainer">test002@gmail.com</div>
+        <div id="userDetailsContainer">{{comment.User}}</div>
         <button id = "replyButton" v-on:click="component = 'reply-input'">
           <div style = "padding-bottom: 10%">
             <ReplyIcon/>
@@ -24,7 +25,8 @@
 
     </div>
   </div>
-  <component v-bind:is = "component" @remove = "cancelComment()"></component>
+  <component v-bind:is = "component" @remove = "cancelComment()" v-bind:comment_id = 'comment_id'></component>
+</li>
 
   <div class="container">
     <form id="myform">
@@ -66,6 +68,9 @@ import { getFirestore } from "firebase/firestore";
 import ReplyIcon from "../assets/ReplyIcon.vue"
 import ReplyInput from "./ReplyInput.vue";
 
+const commentCollection = collection(db, "Comment_Collection");
+console.log(commentCollection);
+
 export default {
   components: {
     ReplyIcon,
@@ -75,6 +80,7 @@ export default {
   data() {
     return {
       component: null,
+      new_reply: "",
       comment_id: "AGEeFQOAGfpxxrlEdkjl",
       comment_user: "test002@gmail.com"
     }
@@ -145,9 +151,12 @@ export default {
     }
 
     },
+
     cancelComment() {
       this.component = null;
-    }
+    },
+
+    
   }
 }
 /* 
