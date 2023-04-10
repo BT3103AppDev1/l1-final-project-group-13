@@ -44,8 +44,9 @@
 
 <script>
 import { db } from '../firebase.js';
-import { doc, collection, getDocs } from 'firebase/firestore';
+import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // export default {
 //     mounted() {
@@ -78,71 +79,115 @@ export default {
   components: {
     PerfectScrollbar,
   },
-  data: function () {
+  data() {
     return {
-      values: [
-        {
-          user_id: '64247f9646a1c53b703f5f47',
-          resume_id: 1,
-          experience: '1',
-          date: '20 Jan 2023',
-          name: 'Cleo Ray',
-          title: 'Applying to MALATHION',
-          role: 'Software Developer',
-          location: 'United Arab Emirates',
-        },
-        {
-          user_id: '64247f96c890a2ecc3657ee8',
-          resume_id: 2,
-          experience: '2',
-          date: '20 Jun 2023',
-          name: 'Maria Vinson',
-          title: 'Applying to EXOSWITCH',
-          role: 'Software Engineer',
-          location: 'Kazakhstan',
-        },
-        {
-          user_id: '64247f9670ac2432ff780cf5',
-          resume_id: 3,
-          experience: '3',
-          date: '20 Feb 2023',
-          name: 'Jayne Grant',
-          title: 'Applying to SPORTAN',
-          role: 'Data Analyst',
-          location: 'Hong Kong',
-        },
-        {
-          user_id: '64247f96521ce02531404d85',
-          resume_id: 4,
-          experience: '4',
-          date: '26 May 2023',
-          name: 'Stephenson Ortiz',
-          title: 'Applying to PHUEL',
-          role: 'Computer Engineer',
-          location: 'Nigeria',
-        },
-        {
-          user_id: '64247f969446dab25ab93485',
-          resume_id: 5,
-          experience: '5',
-          date: '14 Apr 2023',
-          name: 'Charlene Hanson',
-          title: 'Applying to PHOLIO',
-          role: 'Software Engineer',
-          location: 'Libya',
-        },
-        {
-          user_id: '64247f969446dab25ab93486',
-          resume_id: 6,
-          experience: '5',
-          date: '14 Apr 2023',
-          name: 'Adam Hanson',
-          title: 'Applying to PHOLIO',
-          role: 'Software Engineer',
-          location: 'Libya',
-        },
-      ],
+      values: [],
     };
+  },
+  mounted() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+        this.getdummyData();
+      }
+    });
+  },
+  methods: {
+    async getdummyData() {
+      let dummyDataDocRef = collection(db, 'dummyData');
+      let snapshot = await getDocs(dummyDataDocRef);
+      this.values = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          let documentData = doc.data();
+          console.log(documentData);
+          let name = documentData['data']['name'];
+          // console.log(name);
+          let title = documentData['data']['title'];
+          let role = documentData['data']['role'];
+          let location = documentData['data']['location'];
+          let experience = documentData['data']['experience'];
+          let date = documentData['data']['date'].toDate().toDateString();
+          let resume_id = documentData['data']['resume_id'];
+          let user_id = documentData['data']['user_id'];
+          return {
+            name,
+            title,
+            role,
+            location,
+            experience,
+            date,
+            resume_id,
+            user_id,
+          };
+        })
+      );
+    },
+
+    //   return {
+    //     values: [
+    //       {
+    //         user_id: '64247f9646a1c53b703f5f47',
+    //         resume_id: 1,
+    //         experience: '1',
+    //         date: '20 Jan 2023',
+    //         name: 'Cleo Ray',
+    //         title: 'Applying to MALATHION',
+    //         role: 'Software Developer',
+    //         location: 'United Arab Emirates',
+    //       },
+    //       {
+    //         user_id: '64247f96c890a2ecc3657ee8',
+    //         resume_id: 2,
+    //         experience: '2',
+    //         date: '20 Jun 2023',
+    //         name: 'Maria Vinson',
+    //         title: 'Applying to EXOSWITCH',
+    //         role: 'Software Engineer',
+    //         location: 'Kazakhstan',
+    //       },
+    //       {
+    //         user_id: '64247f9670ac2432ff780cf5',
+    //         resume_id: 3,
+    //         experience: '3',
+    //         date: '20 Feb 2023',
+    //         name: 'Jayne Grant',
+    //         title: 'Applying to SPORTAN',
+    //         role: 'Data Analyst',
+    //         location: 'Hong Kong',
+    //       },
+    //       {
+    //         user_id: '64247f96521ce02531404d85',
+    //         resume_id: 4,
+    //         experience: '4',
+    //         date: '26 May 2023',
+    //         name: 'Stephenson Ortiz',
+    //         title: 'Applying to PHUEL',
+    //         role: 'Computer Engineer',
+    //         location: 'Nigeria',
+    //       },
+    //       {
+    //         user_id: '64247f969446dab25ab93485',
+    //         resume_id: 5,
+    //         experience: '5',
+    //         date: '14 Apr 2023',
+    //         name: 'Charlene Hanson',
+    //         title: 'Applying to PHOLIO',
+    //         role: 'Software Engineer',
+    //         location: 'Libya',
+    //       },
+    //       {
+    //         user_id: '64247f969446dab25ab93486',
+    //         resume_id: 6,
+    //         experience: '5',
+    //         date: '14 Apr 2023',
+    //         name: 'Adam Hanson',
+    //         title: 'Applying to PHOLIO',
+    //         role: 'Software Engineer',
+    //         location: 'Libya',
+    //       },
+    //     ],
+    //   };
   },
 };
 </script>

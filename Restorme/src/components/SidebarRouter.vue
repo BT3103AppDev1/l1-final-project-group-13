@@ -42,6 +42,10 @@ export default {
           href: '/homeWithZeroResumes',
           title: 'Home with zero resumes (Test)',
         },
+        {
+          href: '/previewer',
+          title: 'Previewer',
+        },
       ],
       selectedTheme: 'white-theme',
     };
