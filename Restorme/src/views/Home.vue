@@ -36,7 +36,7 @@
           </div>
         </div>
         <div id="pdfContainer">
-          <vue-pdf-embed :source="pdfSource" ref="pdfViewer" />
+          <vue-pdf-embed :source="pdfSource" ref="pdfEmbed"/>
         </div>
       </div>
       <div id="commentsContainer">
@@ -75,9 +75,16 @@ export default {
   setup() {
     const resumeButtons = ref2([]);
 
-    async function loadDocs() {
+    const requiredURL = {value: null};
+    //this.pdfSource = requiredURL.value;
+    
+    console.log(requiredURL.value);
+    
+    async function loadDocs(userEmail) {
       const bucketRef = ref(
         storage,
+
+        // i need help with linking the useremail here
         'gs://restorme-cf3da.appspot.com/mattlim2000@gmail.com'
       );
       const docList = await listAll(bucketRef);
@@ -93,18 +100,27 @@ export default {
 
       const url = getDownloadURL(requiredRef)
         .then((url) => {
-          console.log(url);
+          //console.log(url);
+
+          // i need help with changing the pdfSource here
+          requiredURL.value = url;
+          console.log(this.email);
+          console.log("updated!" + requiredURL.value);
+          console.log("before, pdfSource is: " + this.pdfSource);
+          this.pdfSource = requiredURL.value;
+          console.log("the pdf source is now " + this.pdfSource);
+
         })
         .catch((error) => {
           console.error('error getting url:', error);
         });
 
-      this.pdfSource = url;
+      //this.pdfSource = url;
     }
 
     loadDocs();
 
-    return { resumeButtons, downloadDoc };
+    return { resumeButtons, downloadDoc, requiredURL };
   },
 
   data() {
