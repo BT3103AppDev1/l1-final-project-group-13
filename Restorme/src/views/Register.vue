@@ -44,6 +44,7 @@ import {
   collection,
   getDocs,
   addDoc,
+  setDoc,
   doc,
 setDoc,
 } from 'firebase/firestore';
