@@ -1,20 +1,15 @@
 <template>
-  <div>
+  <div id = "largeContainer" >
     <div id="comment">
       <div id="votesContainer">
         <div class="vote">+</div>
         <div class="voteCount">3</div>
         <div class="vote">-</div>
       </div>
-      <div id="contentContainer">
-        <div id="topHalfContent">
+      <div id = "commentContentsContainer">
+        <div id="commentsTopHalfContent">
           <div id="userDetailsContainer">test002@gmail.com</div>
-          <button id="replyButton" v-on:click="component = 'reply-input'">
-            <div style="padding-bottom: 10%">
-              <ReplyIcon />
-            </div>
-            <p style="margin-left: 8%">Reply</p>
-          </button>
+          <img src="../assets/reply.png" id="replyButton" v-on:click="component = 'reply-input'"/>
         </div>
         <div id="commentDetailsContainer">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
@@ -22,11 +17,10 @@
           illum rem voluptatum est, enim commodi cumque corporis pariatur quaerat
           dicta.
         </div>
-
       </div>
     </div>
+
     <component v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='comment_id'></component>
-  </div>
 
   <div class="container">
     <form id="myform">
@@ -57,6 +51,7 @@
       </div>
     </form>
   </div>
+  </div>
 </template>
 
 <script>
@@ -64,14 +59,14 @@ import { auth } from "../firebase";
 import { db } from "../firebase";
 import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
-import ReplyIcon from "../assets/ReplyIcon.vue"
 import ReplyInput from "./ReplyInput.vue";
 
+const comments_collection = collection(db, "Comments");
+console.log(comments_collection)
 
 
 export default {
   components: {
-    ReplyIcon,
     "reply-input": ReplyInput
   },
 
@@ -215,7 +210,7 @@ form {
   text-align: left;
   align-items: center;
   margin: auto;
-  height: 100%;
+  height: 50%;
 }
 
 input:hover {
@@ -231,17 +226,20 @@ select {
   width: 20em;
 }
 
+#largeContainer {
+  height: 500px;
+  width: 380px;
+}
+
 #comment {
   display: flex;
-  flex-direction: row;
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  margin-bottom: 20px;
+  height: 50%;
 }
 
 #votesContainer {
-  flex: 1;
   /* background-color: rgb(0, 153, 255); */
   display: flex;
   justify-content: center;
@@ -250,7 +248,8 @@ select {
   flex-direction: column;
   background-color: #f5f6fa;
   border-radius: 50px;
-  margin: 20px;
+  margin: 5%;
+  width: 40%;
 }
 
 .vote {
@@ -272,16 +271,18 @@ select {
   color: #5357b6;
 }
 
-#contentContainer {
-  flex: 15;
-  display: flex;
-  flex-direction: column;
-  /* background-color: rgb(255, 0, 0); */
+#commentContentsContainer{
+  margin-left: 1%;
 }
 
-#topHalfContent {
+
+#commentsTopHalfContent {
   display: flex;
   flex-direction: row;
+  height: 10%;
+  width: 90%;
+  margin-top: 10%;
+  margin-bottom: 10%;
 }
 
 @font-face {
@@ -297,32 +298,26 @@ select {
 #userDetailsContainer {
   flex: 1;
   /* background-color: rgb(0, 255, 0); */
-  padding: 10px;
-  margin-top: 10px;
   font-family: Rubik-Medium;
-  font-size: 14px;
-  margin-bottom: -5px;
+  font-size: 100%;
+  margin-bottom: -5%;
 }
 
 #commentDetailsContainer {
-  flex: 3;
   /* background-color: rgb(255, 0, 255); */
-  padding: 10px;
   color: grey;
   font-family: Rubik-Regular;
   font-weight: medium;
-  margin-bottom: 5px;
+
 }
 
 #replyButton {
-  width: 25%;
-  font-size: 80%;
-  height: 50%;
-  display: flex;
-  flex-direction: row;
-  margin-top: 5%;
-  margin-right: 5%;
-  background-color: white;
-  border: none;
+  height: 100%;
+  margin-right: 2%;
+  padding-right: 10%;
+}
+
+#replyButton:hover {
+  background-color: lavender;
 }
 </style>

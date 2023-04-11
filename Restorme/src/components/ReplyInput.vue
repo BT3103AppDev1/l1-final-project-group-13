@@ -1,7 +1,7 @@
 <template>
   <div id="reply">
     <form id="replyForm">
-      <div id="contentContainer">
+      <div id="replyContentContainer">
         <div id="topHalfContent">
           <div id="userDetailsContainer">test002@gmail.com</div>
           <button id="cancelCommentButton" @click="$emit('remove')">x</button>
@@ -74,47 +74,44 @@ export default {
 
 <style scoped>
 #reply {
-  display: flex;
-  flex-direction: row;
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   margin-bottom: 20px;
   margin-left: 10%;
+  margin-top: 5%;
+  height: 30%;
 }
 
 #replyForm {
   width: 100%;
 }
 
-#contentContainer {
-  flex: 15;
+#replyContentContainer {
   display: flex;
   flex-direction: column;
   /* background-color: rgb(255, 0, 0); */
   width: 100%;
+  height: 50%;
 }
 
 #topHalfContent {
   display: flex;
   flex-direction: row;
   margin-left: 5%;
+  margin-top: 5%;
+
 }
 
 #userDetailsContainer {
-  flex: 1;
   /* background-color: rgb(0, 255, 0); */
-  padding: 10px;
-  margin-top: 10px;
   font-family: Rubik-Medium;
   font-size: 14px;
-  margin-bottom: -5px;
+  
 }
 
 #commentDetailsContainer {
-  flex: 3;
   /* background-color: rgb(255, 0, 255); */
-  padding: 10px;
   color: grey;
   font-family: Rubik-Regular;
   font-weight: medium;
@@ -124,16 +121,23 @@ export default {
 #replyDescription {
   width: 90%;
   margin-left: 5%;
+  margin-top: 5%;
 }
 
 #saveReplyButton {
   width: 15%;
-  font-size: 90%;
+  font-size: 80%;
   height: 20%;
-  display: flex;
-  flex-direction: row;
-  margin-top: 5%;
   margin-left: 5%;
+  margin-top: 1%;
+  background-color: orange;
+  border-color: orange;
+  color: white;
+}
+
+#saveReplyButton:hover {
+  background-color: darkorange;
+  border-color: darkorange;
 }
 
 #cancelCommentButton {
