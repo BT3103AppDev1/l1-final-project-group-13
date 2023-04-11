@@ -7,6 +7,12 @@
     </div>
     <div id="contentContainer">
       <div id="userDetailsContainer">test002@gmail.com</div>
+      <button id = "replyButton" v-on:click="component = 'reply-input'">
+            <div style = "padding-bottom: 10%">
+              <ReplyIcon/>
+            </div>
+            <p style = "margin-left: 8%">Reply</p>
+          </button>
       <div id="commentDetailsContainer">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
         maiores nemo, distinctio, modi consequuntur dolorem velit doloribus iure
