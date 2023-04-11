@@ -46,6 +46,7 @@ import {
   addDoc,
   setDoc,
   doc,
+setDoc,
 } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { auth, db } from '../firebase.js';
@@ -58,8 +59,9 @@ const register = async () => {
       console.log(email.value, 'Successfully Registered');
       alert("You've successfully registered!");
       router.push('./Home');
+      const currUserUID = auth.currentUser.uid;
       try {
-        const docRef = setDoc(doc(db, 'users', email.value), {
+        const docRef = setDoc(doc(db, 'users', currUserUID), {
           Email: email.value,
           Name: null,
           Age: null,
