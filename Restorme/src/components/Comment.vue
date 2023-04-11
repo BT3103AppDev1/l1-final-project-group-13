@@ -1,5 +1,7 @@
 <template>
   <div id = "largeContainer" >
+    <ul>
+      <li v-for = "value in values" key: value.comment_id>
     <div id="comment">
       <div id="votesContainer">
         <div class="vote">+</div>
@@ -8,7 +10,7 @@
       </div>
       <div id = "commentContentsContainer">
         <div id="commentsTopHalfContent">
-          <div id="userDetailsContainer">test002@gmail.com</div>
+          <div id="userDetailsContainer">@{{value.user}}</div>
           <img src="../assets/reply.png" id="replyButton" v-on:click="component = 'reply-input'"/>
         </div>
         <div id="commentDetailsContainer">
@@ -19,6 +21,8 @@
         </div>
       </div>
     </div>
+    </li>
+    </ul>
 
     <component v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='comment_id'></component>
 
@@ -71,7 +75,13 @@ export default {
   },
 
   mounted() {
-    const commentCollection = collection(db, "Comment_Collection");
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+        this.getdummyData();
+      }
+    });
   },
 
   data() {
@@ -80,6 +90,7 @@ export default {
       new_reply: "",
       comment_id: "AGEeFQOAGfpxxrlEdkjl",
       comment_user: "test002@gmail.com",
+      values: [],
     }
   },
 
@@ -92,6 +103,7 @@ export default {
         snapshot.docs.map(async (doc) => {
           let documentData = doc.data();
           console.log(documentData);
+          let comment_id = documentData['Comment_ID']
           let description = documentData['Description'];
           // console.log(name);
           let user = documentData['User'];
@@ -99,6 +111,7 @@ export default {
           let upvotes = documentData['Number_Of_Upvotes'];
           let downvotes = documentData['Number_of_Downvotes'];
           return {
+            comment_id,
             description,
             user,
             date,
