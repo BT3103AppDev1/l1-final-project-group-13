@@ -47,6 +47,7 @@
         </div>
       </div>
       <div id="commentsContainer">
+        <CommentDisplay />
         <Comment />
       </div>
     </div>
@@ -57,6 +58,7 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import Comment from '../components/Comment.vue';
+import CommentDisplay from '../components/CommentDisplay.vue';
 
 export default {
   name: 'Home',
@@ -71,7 +73,8 @@ export default {
   components: {
     VuePdfEmbed,
     Comment,
-  },
+    CommentDisplay
+},
 
   mounted() {
     const auth = getAuth();
