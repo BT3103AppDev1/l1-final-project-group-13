@@ -61,7 +61,8 @@
 <script>
 import { auth } from "../firebase";
 import { db } from "../firebase";
-import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, updateDoc, getDocs } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import ReplyInput from "./ReplyInput.vue";
 
@@ -79,7 +80,7 @@ export default {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
-        this.getdummyData();
+        this.getCommentsData();
       }
     });
   },
