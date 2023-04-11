@@ -137,7 +137,7 @@ export default {
   components: {
     VuePdfEmbed,
     Comment,
-    CommentDisplay
+    CommentDisplay,
     Login,
     SidebarRouter,
     Profile,
