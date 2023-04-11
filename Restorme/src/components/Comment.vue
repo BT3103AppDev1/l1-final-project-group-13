@@ -85,6 +85,30 @@ export default {
 
   methods: {
 
+    async getCommentsData() {
+      let commentsDataDocRef = collection(db, 'Comments');
+      let snapshot = await getDocs(commentsDataDocRef);
+      this.values = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          let documentData = doc.data();
+          console.log(documentData);
+          let description = documentData['Description'];
+          // console.log(name);
+          let user = documentData['User'];
+          let date = documentData['Upload_Date'].toDate().toDateString();;
+          let upvotes = documentData['Number_Of_Upvotes'];
+          let downvotes = documentData['Number_of_Downvotes'];
+          return {
+            description,
+            user,
+            date,
+            upvotes,
+            downvotes
+          };
+        })
+      );
+    },
+
     async saveCommentToFS(resumeID) {
       const commentCollection = collection(db, "Comment_Collection")
       const user = auth.currentUser;
@@ -152,6 +176,8 @@ export default {
     cancelComment() {
       this.component = null;
     },
+
+    
 
 
   }
