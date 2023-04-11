@@ -152,6 +152,7 @@ export default {
   /* background-color: rgb(255, 0, 212); */
   margin-left: 20px;
   overflow-y: scroll;
+
 }
 
 #pdfContainer {

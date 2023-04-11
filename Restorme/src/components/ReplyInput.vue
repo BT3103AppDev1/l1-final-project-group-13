@@ -83,11 +83,16 @@ export default {
   margin-left: 10%;
 }
 
+#replyForm {
+  width: 100%;
+}
+
 #contentContainer {
   flex: 15;
   display: flex;
   flex-direction: column;
   /* background-color: rgb(255, 0, 0); */
+  width: 100%;
 }
 
 #topHalfContent {
