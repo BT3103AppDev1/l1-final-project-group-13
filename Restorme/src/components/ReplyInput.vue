@@ -3,7 +3,8 @@
     <form id="replyForm">
       <div id="replyContentContainer">
         <div id="topHalfContent">
-          <div id="userDetailsContainer">test002@gmail.com</div>
+          <div id="userDetailsContainer">
+            <text v-if = "user">{{ user.email }}</text></div>
           <button id="cancelCommentButton" @click="$emit('remove')">x</button>
         </div>
         <div id="commentDetailsContainer">
@@ -17,14 +18,30 @@
 </template>
 
 <script>
-import { auth } from "../firebase";
 import { db } from "../firebase";
-import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 
 export default {
   name: 'ReplyInput',
   props: ['comment_id'],
+  
+  mounted() {
+    const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.user = user;
+        }
+      });
+    },
+
+    data() {
+      return {
+        user: false,
+      }
+    },
+
   methods: {
     // async getReplyDescription() {
     //   let reply_description = document.getElementById("replyDescription").value;

@@ -1,6 +1,6 @@
 <template>
   <div id = "largeContainer" >
-    <ul>
+    <ul style = "list-style-type: none;">
       <li v-for = "value in values" key: value.comment_id>
     <div id="comment">
       <div id="votesContainer">
@@ -14,17 +14,24 @@
           <img src="../assets/reply.png" id="replyButton" v-on:click="component = 'reply-input'"/>
         </div>
         <div id="commentDetailsContainer">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
-          maiores nemo, distinctio, modi consequuntur dolorem velit doloribus iure
-          illum rem voluptatum est, enim commodi cumque corporis pariatur quaerat
-          dicta.
+          {{value.description}}
         </div>
       </div>
     </div>
+    <ul style = "list-style-type: none;">
+      <li v-for = "reply in value.replies" >
+        <div>
+          <text>
+            {{ reply.reply_description }}
+          </text>
+        </div>
+      </li>
+    </ul>
+     <component v-if="value.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
     </li>
     </ul>
 
-    <component v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='comment_id'></component>
+   
 
   <div class="container">
     <form id="myform">
@@ -89,8 +96,8 @@ export default {
     return {
       component: null,
       new_reply: "",
-      comment_id: "AGEeFQOAGfpxxrlEdkjl",
-      comment_user: "test002@gmail.com",
+      comment_id: "",
+      comment_user: "",
       values: [],
     }
   },
@@ -108,16 +115,30 @@ export default {
           let description = documentData['Description'];
           // console.log(name);
           let user = documentData['User'];
-          let date = documentData['Upload_Date'].toDate().toDateString();;
+          let date = documentData['Upload_Date'];
           let upvotes = documentData['Number_Of_Upvotes'];
           let downvotes = documentData['Number_of_Downvotes'];
+          let repliesDataDocRef =  collection(db, 'Comments', comment_id, 'Reply_Collection');
+          let snapshot_replies = await getDocs(repliesDataDocRef);
+          console.log(snapshot_replies);
+          var replies = []
+          snapshot_replies.forEach((reply_doc) => {
+            let replyData = reply_doc.data()
+            let reply = {
+              reply_id: replyData['Reply_ID'],
+              reply_description: replyData['Description']
+            }
+            replies.push(reply)
+          })
+          console.log(replies)
           return {
             comment_id,
             description,
             user,
             date,
             upvotes,
-            downvotes
+            downvotes,
+            replies
           };
         })
       );
@@ -267,8 +288,8 @@ select {
 }
 
 #largeContainer {
-  height: 500px;
-  width: 380px;
+  height: 800px;
+  overflow-y: scroll;
 }
 
 #comment {
@@ -276,7 +297,8 @@ select {
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  height: 50%;
+  height: 150px;
+  width: 350px;
 }
 
 #votesContainer {
