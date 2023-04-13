@@ -39,10 +39,6 @@ export default {
           title: 'Help',
         },
         {
-          href: '/homeWithZeroResumes',
-          title: 'Home with zero resumes (Test)',
-        },
-        {
           href: '/uploadResumes',
           title: 'Upload',
         },
@@ -50,8 +46,6 @@ export default {
         //  href: '/previewer',
         //  title: 'Previewer',
         //},
-
-
       ],
       selectedTheme: 'white-theme',
     };
