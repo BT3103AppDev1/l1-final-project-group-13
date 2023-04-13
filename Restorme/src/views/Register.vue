@@ -46,7 +46,6 @@ import {
   addDoc,
   setDoc,
   doc,
-setDoc,
 } from 'firebase/firestore';
 import { useRouter } from 'vue-router';
 import { auth, db } from '../firebase.js';
