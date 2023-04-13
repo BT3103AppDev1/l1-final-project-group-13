@@ -48,6 +48,11 @@ const routes = [
   //},
 
 
+  // {
+  //   path: '/resumeCommentDisplay',
+  //   name: 'ResumeCommentDisplay',
+  //   component: () => import('@/views/ResumeCommentDisplay.vue'),
+  // },
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',

@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-    <div class="topFilterBar">
+  <div class="container" v-if="resume_id === null">
+    <!-- <div class="topFilterBar">
       <button class="filterButtons">All Resumes</button>
       <button class="filterButtons">Starred Resumes</button>
-    </div>
+    </div> -->
     <div class="overflow-scroll" id="resumeListContainer">
       <br />
       <ul class="resumeList">
@@ -14,11 +14,16 @@
               <div class="topContainer">
                 <label for="checkbox">
                   <div id="titleContainer">
-                    <h2 id="title">{{ value.title }}</h2>
+                    <button
+                      id="resumeLink"
+                      @click="showResume(value.resume_id, value.email)"
+                    >
+                      <h2 id="title">{{ value.title }}</h2>
+                    </button>
                   </div>
                 </label>
                 <div class="uploadDetails">
-                  Uploaded by {{ value.name }} on {{ value.date }}
+                  Uploaded by {{ value.email }} on {{ value.date }}
                 </div>
                 <div class="goToResumeContainer">
                   <button id="goToResume">></button>
@@ -40,6 +45,19 @@
       </ul>
     </div>
   </div>
+  <div class="resumeChosenContainer" v-if="resume_id != null">
+    <div id="pdfContainer">
+      <div id="buttonContainer">
+        <button @click="resume_id = null" id="returnButton">
+          Back to Resume List
+        </button>
+      </div>
+      <div id="pdfDisplayContainer">
+        <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" :width="600" />
+      </div>
+    </div>
+    <div id="commentsContainer">Comments</div>
+  </div>
 </template>
 
 <script>
@@ -47,41 +65,24 @@ import { db } from '../firebase.js';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
-// export default {
-//     mounted() {
-//         async function data() {
-//             let resumes = await getDocs(collection(db, "dummyData"));
-//             let index = 1;
-//             resumes.forEach((docs) => {
-//                 let documentData = docs.data()
-//                 console.log(docs.data());
-//                 let title = (documentData.title)
-//                 console.log(title)
-
-//                 let table = document.getElementById("resumes_table")
-//                 let row = table.insertRow(index)
-
-//                 let cell1 = row.insertCell(0);
-//                 cell1.innerHTML = title;
-
-//                 index += 1
-//             })
-
-//         }
-//         data();
-//     }
-
-// }
+import VuePdfEmbed from 'vue-pdf-embed';
+import { storage } from '../firebase';
+import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
 export default {
   name: 'AllResumes',
   components: {
     PerfectScrollbar,
+    VuePdfEmbed,
   },
   data() {
     return {
       values: [],
+      user: null,
+      userID: null,
+      resume_id: null,
+      pdfSource: null,
+      resumeUserEmail: null,
     };
   },
   mounted() {
@@ -90,28 +91,32 @@ export default {
       if (user) {
         this.user = user;
         this.getdummyData();
+        this.userID = user.uid;
+        // console.log(this.userID);
       }
     });
   },
   methods: {
     async getdummyData() {
-      let dummyDataDocRef = collection(db, 'dummyData');
+      let dummyDataDocRef = collection(db, 'ResumeTestData');
       let snapshot = await getDocs(dummyDataDocRef);
       this.values = await Promise.all(
         snapshot.docs.map(async (doc) => {
           let documentData = doc.data();
-          console.log(documentData);
-          let name = documentData['data']['name'];
+          // console.log(documentData);
+          let additionalInfo = documentData['Additional Info'];
           // console.log(name);
-          let title = documentData['data']['title'];
-          let role = documentData['data']['role'];
-          let location = documentData['data']['location'];
-          let experience = documentData['data']['experience'];
-          let date = documentData['data']['date'].toDate().toDateString();
-          let resume_id = documentData['data']['resume_id'];
-          let user_id = documentData['data']['user_id'];
+          let title = documentData['Title'];
+          console.log(title);
+          let role = documentData['Role'];
+          let location = documentData['Location'];
+          let experience = documentData['Experience'];
+          let date = documentData['Date'].toDate().toDateString();
+          let resume_id = documentData['ResumeID'];
+          let user_id = documentData['UserID'];
+          let email = documentData['Email'];
           return {
-            name,
+            additionalInfo,
             title,
             role,
             location,
@@ -119,75 +124,35 @@ export default {
             date,
             resume_id,
             user_id,
+            email,
           };
         })
       );
     },
+    showResume(resume_id, email) {
+      console.log('resumeid = ', resume_id);
+      this.resume_id = resume_id;
+      this.resumeUserEmail = email;
+      console.log('resumeToBeDisplayed = ', this.resume_id);
+      this.downloadDoc(this.resumeUserEmail, this.resume_id);
+      // this.$emit('resumeClicked', resume_id);
+      // this.$router.push('/resumeCommentDisplay');
+    },
+    async downloadDoc(userEmail, resumeID) {
+      const requiredRef = ref(
+        storage,
+        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID + '.pdf'
+      );
 
-    //   return {
-    //     values: [
-    //       {
-    //         user_id: '64247f9646a1c53b703f5f47',
-    //         resume_id: 1,
-    //         experience: '1',
-    //         date: '20 Jan 2023',
-    //         name: 'Cleo Ray',
-    //         title: 'Applying to MALATHION',
-    //         role: 'Software Developer',
-    //         location: 'United Arab Emirates',
-    //       },
-    //       {
-    //         user_id: '64247f96c890a2ecc3657ee8',
-    //         resume_id: 2,
-    //         experience: '2',
-    //         date: '20 Jun 2023',
-    //         name: 'Maria Vinson',
-    //         title: 'Applying to EXOSWITCH',
-    //         role: 'Software Engineer',
-    //         location: 'Kazakhstan',
-    //       },
-    //       {
-    //         user_id: '64247f9670ac2432ff780cf5',
-    //         resume_id: 3,
-    //         experience: '3',
-    //         date: '20 Feb 2023',
-    //         name: 'Jayne Grant',
-    //         title: 'Applying to SPORTAN',
-    //         role: 'Data Analyst',
-    //         location: 'Hong Kong',
-    //       },
-    //       {
-    //         user_id: '64247f96521ce02531404d85',
-    //         resume_id: 4,
-    //         experience: '4',
-    //         date: '26 May 2023',
-    //         name: 'Stephenson Ortiz',
-    //         title: 'Applying to PHUEL',
-    //         role: 'Computer Engineer',
-    //         location: 'Nigeria',
-    //       },
-    //       {
-    //         user_id: '64247f969446dab25ab93485',
-    //         resume_id: 5,
-    //         experience: '5',
-    //         date: '14 Apr 2023',
-    //         name: 'Charlene Hanson',
-    //         title: 'Applying to PHOLIO',
-    //         role: 'Software Engineer',
-    //         location: 'Libya',
-    //       },
-    //       {
-    //         user_id: '64247f969446dab25ab93486',
-    //         resume_id: 6,
-    //         experience: '5',
-    //         date: '14 Apr 2023',
-    //         name: 'Adam Hanson',
-    //         title: 'Applying to PHOLIO',
-    //         role: 'Software Engineer',
-    //         location: 'Libya',
-    //       },
-    //     ],
-    //   };
+      const url = getDownloadURL(requiredRef)
+        .then((url) => {
+          this.pdfSource = url;
+          // console.log('the pdf source is now ' + this.pdfSource);
+        })
+        .catch((error) => {
+          console.error('error getting url:', error);
+        });
+    },
   },
 };
 </script>
@@ -207,7 +172,8 @@ export default {
 }
 
 .container {
-  margin-left: 15%;
+  margin-left: 5%;
+  margin-top: 1%;
   background-color: rgb(248, 248, 246);
   border-width: 0.5%;
   border-style: solid;
@@ -224,7 +190,7 @@ export default {
 }
 
 #resumeListContainer {
-  height: 600px;
+  height: 90vh;
   overflow-y: scroll;
 }
 
@@ -249,8 +215,8 @@ export default {
 }
 
 #titleContainer {
-  margin-left: 10%;
-  width: 300px;
+  margin-left: 5%;
+  width: 600px;
   display: flex;
   flex-direction: row;
 }
@@ -291,5 +257,55 @@ export default {
   background-color: rgb(248, 248, 246);
   border: none;
   font-size: 150%;
+}
+
+.resumeChosenContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+#pdfContainer {
+  flex: 1;
+  /* background-color: rgb(0, 255, 0); */
+  align-self: center;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#buttonContainer {
+  /* flex: 1; */
+  /* background-color: rgb(255, 0, 0); */
+  align-self: flex-start;
+  display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#returnButton {
+  border-radius: 10%;
+  height: auto;
+}
+
+#pdfDisplayContainer {
+  flex: 1;
+  /* background-color: rgb(255, 255, 0); */
+  align-self: center;
+  justify-content: center;
+  height: 95vh;
+  display: flex;
+  overflow-y: scroll;
+  width: 100%;
+  /* border: 2px solid black; */
+}
+
+#commentsContainer {
+  flex: 1;
+  background-color: rgb(92, 190, 255);
+  align-self: center;
+  height: 95vh;
+  margin-top: 60px;
+  display: flex;
 }
 </style>

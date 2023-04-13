@@ -40,6 +40,7 @@
         </div>
       </div>
       <div id="commentsContainer">
+        <CommentDisplay />
         <Comment />
       </div>
     </div>
@@ -50,6 +51,7 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import Comment from '../components/Comment.vue';
+import CommentDisplay from '../components/CommentDisplay.vue';
 import { storage } from '../firebase';
 import { ref as ref2 } from 'vue';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
@@ -135,6 +137,7 @@ export default {
   components: {
     VuePdfEmbed,
     Comment,
+    CommentDisplay,
     Login,
     SidebarRouter,
     Profile,
