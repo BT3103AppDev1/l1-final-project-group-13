@@ -64,12 +64,13 @@ export default {
       let upvotesNum = 0;
       let downvotesNum = 0;
       let markedUseful = false;
+      let user = this.user.email
 
       try {
         const docRef = await addDoc(collection(db, "Comments", comment_id, "Reply_Collection"), {
           Reply_ID: "", Comment_ID: comment_id, Upload_Date: dateTime,
           Description: reply_description, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
-          Marked_Useful: markedUseful
+          Marked_Useful: markedUseful, User: user
         })
 
         console.log(String(docRef.id))

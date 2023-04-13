@@ -11,7 +11,7 @@
       <div id = "commentContentsContainer">
         <div id="commentsTopHalfContent">
           <div id="userDetailsContainer">@{{value.user}}</div>
-          <img src="../assets/reply.png" id="replyButton" v-on:click="component = 'reply-input'"/>
+          <img src="../assets/reply.png" id="replyButton" v-on:click="showReply(value.comment_id)"/>
         </div>
         <div id="commentDetailsContainer">
           {{value.description}}
@@ -21,13 +21,25 @@
     <ul style = "list-style-type: none;">
       <li v-for = "reply in value.replies" >
         <div>
-          <text>
-            {{ reply.reply_description }}
-          </text>
+            <div id="comment">
+              <div id="votesContainer">
+                <div class="vote">+</div>
+                <div class="voteCount">3</div>
+                <div class="vote">-</div>
+              </div>
+              <div id = "commentContentsContainer">
+                <div id="commentsTopHalfContent">
+                  <div id="userDetailsContainer">@{{ reply.reply_user }}</div>
+                </div>
+                <div id="commentDetailsContainer">
+                  {{ reply.reply_description  }}
+                </div>
+              </div>
+        </div>
         </div>
       </li>
     </ul>
-     <component v-if="value.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
+     <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
     </li>
     </ul>
 
@@ -126,7 +138,9 @@ export default {
             let replyData = reply_doc.data()
             let reply = {
               reply_id: replyData['Reply_ID'],
-              reply_description: replyData['Description']
+              reply_description: replyData['Description'],
+              reply_user: replyData['User']
+
             }
             replies.push(reply)
           })
@@ -211,6 +225,11 @@ export default {
     cancelComment() {
       this.component = null;
     },
+
+    showReply(comment_id) {
+      this.comment_id = comment_id;
+      this.component = 'reply-input';
+    }
 
     
 
