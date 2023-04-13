@@ -297,7 +297,7 @@ export default {
   display: flex;
   overflow-y: scroll;
   width: 100%;
-  border: 2px solid black;
+  /* border: 2px solid black; */
 }
 
 #commentsContainer {
