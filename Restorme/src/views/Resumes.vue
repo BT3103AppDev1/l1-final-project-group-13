@@ -5,12 +5,11 @@
         <SidebarRouter />
       </div>
       <div id="contentContainer">
-        <div class="resumeComponents">
+        <AllResumes />
+        <!-- <div class="resumeComponents">
           <FilterResumes />
-        </div>
-        <div class="resumeComponents">
-          <AllResumes />
-        </div>
+        </div> -->
+        <!-- <div class="resumeComponents"></div> -->
       </div>
     </div>
   </div>
@@ -45,9 +44,9 @@ export default {
 </script>
 
 <style scoped>
-.resumeComponents {
+/* .resumeComponents {
   display: inline;
-}
+} */
 
 #ResumesContainer {
   display: flex;
@@ -70,6 +69,6 @@ export default {
   height: 95vh;
   margin-top: 60px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 </style>

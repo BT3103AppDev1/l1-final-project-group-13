@@ -36,6 +36,11 @@ const routes = [
     name: 'HomeWithZeroResumes',
     component: () => import('@/views/HomeWithZeroResumes.vue'),
   },
+  // {
+  //   path: '/resumeCommentDisplay',
+  //   name: 'ResumeCommentDisplay',
+  //   component: () => import('@/views/ResumeCommentDisplay.vue'),
+  // },
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',
