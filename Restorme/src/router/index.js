@@ -37,10 +37,17 @@ const routes = [
     component: () => import('@/views/HomeWithZeroResumes.vue'),
   },
   {
-    path: '/previewer',
-    name: 'Previewer',
-    component: () => import('@/views/Previewer.vue'),
+    path: '/uploadResumes',
+    name: 'UploadResumes',
+    component: () => import('@/views/UploadResumes.vue'),
   },
+  //{
+  //  path: '/previewer',
+  //  name: 'Previewer',
+  //  component: () => import('@/views/Previewer.vue'),
+  //},
+
+
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',

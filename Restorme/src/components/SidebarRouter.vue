@@ -43,9 +43,15 @@ export default {
           title: 'Home with zero resumes (Test)',
         },
         {
-          href: '/previewer',
-          title: 'Previewer',
+          href: '/uploadResumes',
+          title: 'Upload',
         },
+        //{
+        //  href: '/previewer',
+        //  title: 'Previewer',
+        //},
+
+
       ],
       selectedTheme: 'white-theme',
     };

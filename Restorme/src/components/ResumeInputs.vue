@@ -8,6 +8,7 @@
         <form id="resume_form">
           <label class="resumeLabels" for="title">Title </label> <br />
           <input
+            id="title1"
             class="resumeInput"
             type="text"
             name="title"
@@ -16,6 +17,7 @@
           <br />
           <label class="resumeLabels" for="role">Role </label> <br />
           <input
+            id="role1"
             class="resumeInput"
             type="text"
             name="role"
@@ -24,6 +26,7 @@
           <br />
           <label class="resumeLabels" for="location">Location </label> <br />
           <input
+            id="location1"
             class="resumeInput"
             type="text"
             name="location"
@@ -33,6 +36,7 @@
           <label class="resumeLabels" for="experience">Experience Level </label>
           <br />
           <input
+            id="experience1"
             class="resumeInput"
             type="text"
             name="experience"
@@ -44,6 +48,7 @@
           </label>
           <br />
           <input
+            id="additionalinfo1"
             class="resumeInput"
             type="text"
             name="additionalInfo"
@@ -51,15 +56,18 @@
           />
           <br />
           <div class="pdfDropBox">
-            <p class="dropPdfHeader">
-              Drag & drop files or <span class="bolded"><u>Browse</u></span>
-            </p>
+            <!-- <div class="dropzone" @dragover.prevent @drop="handleFileDrop">
+              Drag & drop files or 
+              <input type="file" ref="myfile" />
+            </div>
             <p class="dropPdfHeader" id="supportedFileFormat">
               Supported file format: PDF only
-            </p>
+            </p> -->
+
+            <input type="file" ref="pdfFile" accept="application/pdf" />
           </div>
           <div id="submitContainer">
-            <button class="submitButton" @click="addDummyData">Submit</button>
+            <button type="button" id="savebutton" v-on:click="save">Submit</button>
           </div>
         </form>
       </div>
@@ -69,73 +77,92 @@
 
 <script>
 // import { dummy_data } from "../data/ResumeData";
-import { db } from '../firebase.js';
-import { writeBatch, doc, collection, addDoc } from 'firebase/firestore';
+import { db, storage } from "../firebase.js";
+import { writeBatch, doc, collection, addDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+import "firebase/storage";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import exp from "constants";
 
 export default {
+  data() {
+    return {
+      user: false,
+      email: "",
+    };
+  },
+
+  mounted() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+        this.email = user.email;
+      } else {
+        this.user = false;
+      }
+    });
+  },
+
   methods: {
-    async addDummyData() {
-      var dummy_data = [
-        {
-          user_id: '64247f9646a1c53b703f5f47',
-          resume_id: 1,
-          experience: '{{integer(0, 50)}',
-          date: 'Sat Jan 20 1973 11:26:35 GMT+0730 (Singapore Standard Time)',
-          name: 'Cleo Ray',
-          title: 'Applying to MALATHION',
-          about:
-            'Ea excepteur quis irure et cupidatat nulla. Anim reprehenderit officia proident eu nostrud ad magna commodo. Irure deserunt eiusmod eu sunt pariatur labore.\r\n',
-          location: 'United Arab Emirates',
-        },
-        {
-          user_id: '64247f96c890a2ecc3657ee8',
-          resume_id: 2,
-          experience: '{{integer(0, 50)}',
-          date: 'Thu Jun 16 1983 13:12:40 GMT+0800 (Singapore Standard Time)',
-          name: 'Maria Vinson',
-          title: 'Applying to EXOSWITCH',
-          about:
-            'Consequat irure quis enim laborum velit amet laboris deserunt ullamco. Amet excepteur officia qui occaecat non. Aute ea excepteur ea nulla sit mollit exercitation enim eiusmod exercitation labore aliqua. Ex laborum veniam non et irure labore amet velit culpa reprehenderit aute laborum aliquip aliqua. Ad eiusmod magna laboris est velit laborum aliqua consectetur. Irure culpa enim officia veniam duis. Sunt magna elit nulla amet.\r\n',
-          location: 'Kazakhstan',
-        },
-        {
-          user_id: '64247f9670ac2432ff780cf5',
-          resume_id: 3,
-          experience: '{{integer(0, 50)}',
-          date: 'Wed Aug 15 2012 22:27:05 GMT+0800 (Singapore Standard Time)',
-          name: 'Jayne Grant',
-          title: 'Applying to SPORTAN',
-          about:
-            'Velit eiusmod ipsum sunt id nulla. Id id tempor in irure mollit sint adipisicing nostrud consequat eu commodo Lorem. Fugiat aute nulla id Lorem sunt. Cupidatat dolore anim elit consectetur aute ex amet veniam occaecat est sit eu. Dolor nulla dolore eiusmod aute consectetur incididunt pariatur. Ut pariatur voluptate eiusmod sint aliqua qui ea magna ipsum qui anim dolore. Amet enim dolore sint est officia culpa.\r\n',
-          location: 'Hong Kong',
-        },
-        {
-          user_id: '64247f96521ce02531404d85',
-          resume_id: 4,
-          experience: '{{integer(0, 50)}',
-          date: 'Mon May 26 2008 22:50:05 GMT+0800 (Singapore Standard Time)',
-          name: 'Stephenson Ortiz',
-          title: 'Applying to PHUEL',
-          about:
-            'Mollit eiusmod ad elit sit sit veniam excepteur culpa incididunt. Nostrud eiusmod ullamco id culpa irure do nisi cillum ipsum. Occaecat ullamco reprehenderit ipsum quis id consequat deserunt culpa excepteur nisi id velit non nulla. Magna sint consequat eiusmod eu irure ut cupidatat sint ad esse cupidatat. Do ullamco cillum duis sunt adipisicing cillum nostrud. Ea quis occaecat ex adipisicing aliqua. Enim adipisicing incididunt adipisicing irure Lorem fugiat ea excepteur velit ex laboris.\r\n',
-          location: 'Nigeria',
-        },
-        {
-          user_id: '64247f969446dab25ab93485',
-          resume_id: 5,
-          experience: '{{integer(0, 50)}',
-          date: 'Fri Apr 14 2006 14:00:23 GMT+0800 (Singapore Standard Time)',
-          name: 'Charlene Hanson',
-          title: 'Applying to PHOLIO',
-          about:
-            'Laboris veniam non nulla ipsum aliquip et tempor. Commodo laborum voluptate ad ut cupidatat amet mollit dolore Lorem voluptate. Irure est laborum laboris ut nostrud.\r\n',
-          location: 'Libya',
-        },
-      ];
-      dummy_data.forEach(async (data) => {
-        const docRef = await addDoc(collection(db, 'dummyData'), { data });
-        console.log('Document written with ID: ', docRef.id);
+    generateRandomId() {
+      const randomChars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < 10; i++) {
+        result += randomChars.charAt(
+          Math.floor(Math.random() * randomChars.length)
+        );
+      }
+      return result;
+    },
+
+    async save() {
+      const uniqueId = this.generateRandomId();
+
+      // handle the pdf
+      const refToUserEmail = 'gs://restorme-cf3da.appspot.com/' + this.email;
+      console.log(refToUserEmail);
+
+      const path = String(this.email) + "/" + String(uniqueId);
+
+      const storageRef = ref(storage, path);
+      uploadBytes(storageRef, this.$refs.pdfFile.files[0]).then((snapshot) => {
+        console.log("uploaded!");
       });
+
+      // save the resume details to firestore database
+
+      let title = document.getElementById("title1").value;
+      let role = document.getElementById("role1").value;
+      let location = document.getElementById("location1").value;
+      let experience = document.getElementById("experience1").value;
+      let additionalInfo = document.getElementById("additionalinfo1").value;
+
+      alert(" Saving your data for this resume with this ID: " + uniqueId );
+      
+      try {
+        const docRef = await setDoc(doc(db, "ResumeInfo", uniqueId), {
+          Title: title,
+          Role: role,
+          Location: location,
+          Experience: experience,
+          Additional_Info: additionalInfo,
+          Resume_Id: uniqueId,
+        });
+        console.log(docRef);
+        document.getElementById("resume_form").reset();
+        this.$emit("added");
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+
+      
+
+
+
+      document.getElementById("savebutton").disabled = false;
     },
   },
 };
