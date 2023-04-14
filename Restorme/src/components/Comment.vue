@@ -21,17 +21,17 @@
     <ul style = "list-style-type: none;">
       <li v-for = "reply in value.replies" >
         <div>
-            <div id="comment">
-              <div id="votesContainer">
+            <div id="reply">
+              <div id="replyVotesContainer">
                 <div class="vote">+</div>
                 <div class="voteCount">3</div>
                 <div class="vote">-</div>
               </div>
-              <div id = "commentContentsContainer">
-                <div id="commentsTopHalfContent">
+              <div id = "replyContentsContainer">
+                <div id="replyTopHalfContent">
                   <div id="userDetailsContainer">@{{ reply.reply_user }}</div>
                 </div>
-                <div id="commentDetailsContainer">
+                <div id="replyDetailsContainer">
                   {{ reply.reply_description  }}
                 </div>
               </div>
@@ -318,6 +318,7 @@ select {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   height: 150px;
   width: 350px;
+  padding-right: 10%;
 }
 
 #votesContainer {
@@ -394,11 +395,60 @@ select {
 
 #replyButton {
   height: 100%;
-  margin-right: 2%;
-  padding-right: 10%;
+  margin-left: 5%;
 }
 
 #replyButton:hover {
   background-color: lavender;
 }
+
+#reply {
+  display: flex;
+  /* background-color: grey; */
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  height: 150px;
+  width: 330px;
+}
+
+#replyVotesContainer {
+  /* background-color: rgb(0, 153, 255); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Rubik-Medium;
+  flex-direction: column;
+  background-color: #f5f6fa;
+  border-radius: 50px;
+  margin: 5%;
+  width: 10%;
+}
+
+#replyContentsContainer{
+  margin-left: 1%;
+}
+
+
+#replyDetailsContainer {
+  /* background-color: rgb(255, 0, 255); */
+  color: grey;
+  font-family: Rubik-Regular;
+  font-weight: medium;
+}
+
+#replyContentsContainer{
+  margin-left: 1%;
+}
+
+
+#replyTopHalfContent {
+  display: flex;
+  flex-direction: row;
+  height: 10%;
+  width: 90%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+
 </style>
