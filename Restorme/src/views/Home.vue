@@ -40,7 +40,6 @@
         </div>
       </div>
       <div id="commentsContainer">
-        <CommentDisplay />
         <Comment />
       </div>
     </div>
@@ -222,6 +221,23 @@ export default {
   justify-content: flex-end;
   align-items: center;
   margin-right: 20px;
+}
+
+#uploadResumeButton{
+  font-size: 80%;
+  height: 30px;
+  width: 200px;
+  background-color: orange;
+  border-color: orange;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 90%;
+  cursor: pointer;
+}
+
+#uploadResumeButton:hover {
+  background-color: darkorange;
 }
 
 #scrollViewOfResumesContainer {

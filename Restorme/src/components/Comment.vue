@@ -1,48 +1,66 @@
 <template>
+  <head>
+    <link rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  </head>
   <div id = "largeContainer" >
+    <h1 id="Current">Comments</h1>
     <ul style = "list-style-type: none;">
-      <li v-for = "value in values" key: value.comment_id>
-    <div id="comment">
-      <div id="votesContainer">
-        <div class="vote">+</div>
-        <div class="voteCount">3</div>
-        <div class="vote">-</div>
+      <li v-for = "cat in categories" >
+        <i class="material-symbols-outlined">{{ category_icons[cat] }}</i>
+          <span id="General">{{cat}}</span>
+      <ul style = "list-style-type: none;">
+        <li v-for = "value in categorizeComment(values, cat)" key: value.comment_id>
+      <div id="comment">
+        <div id="votesContainer">
+          <div class="vote">+</div>
+          <div class="voteCount">3</div>
+          <div class="vote">-</div>
+        </div>
+        <div id = "commentContentsContainer">
+          <div id="commentsTopHalfContent">
+            <div id="userDetailsContainer">@{{ value.user }}</div>
+            <img src="../assets/reply.png" id="replyButton" v-on:click="showReply(value.comment_id)"/>
+          </div>
+          <div id="commentDetailsContainer">
+            {{ value.description }}
+          </div>
+          <div id="commentDateContainer">
+            Posted {{ value.date }}
+          </div>
+        </div>
       </div>
-      <div id = "commentContentsContainer">
-        <div id="commentsTopHalfContent">
-          <div id="userDetailsContainer">@{{value.user}}</div>
-          <img src="../assets/reply.png" id="replyButton" v-on:click="showReply(value.comment_id)"/>
-        </div>
-        <div id="commentDetailsContainer">
-          {{value.description}}
-        </div>
-      </div>
-    </div>
-    <ul style = "list-style-type: none;">
-      <li v-for = "reply in value.replies" >
-        <div>
-            <div id="reply">
-              <div id="replyVotesContainer">
-                <div class="vote">+</div>
-                <div class="voteCount">3</div>
-                <div class="vote">-</div>
-              </div>
-              <div id = "replyContentsContainer">
-                <div id="replyTopHalfContent">
-                  <div id="userDetailsContainer">@{{ reply.reply_user }}</div>
+      <ul style = "list-style-type: none;">
+        <li v-for = "reply in value.replies" >
+          <div>
+              <div id="reply">
+                <div id="replyVotesContainer">
+                  <div class="vote">+</div>
+                  <div class="voteCount">3</div>
+                  <div class="vote">-</div>
                 </div>
-                <div id="replyDetailsContainer">
-                  {{ reply.reply_description  }}
+                <div id = "replyContentsContainer">
+                  <div id="replyTopHalfContent">
+                    <div id="userDetailsContainer">@{{ reply.reply_user }}</div>
+                  </div>
+                  <div id="replyDetailsContainer">
+                    {{ reply.reply_description }}
+                  </div>
+                  <div id="replyDateContainer">
+                    Posted {{ reply.reply_date }}
+                  </div>
                 </div>
-              </div>
-        </div>
-        </div>
+          </div>
+          </div>
+        </li>
+      </ul>
+       <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
+      </li>
+      </ul>
+
       </li>
     </ul>
-     <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
-    </li>
-    </ul>
-
+    
    
 
   <div class="container">
@@ -62,12 +80,12 @@
         </select>
         <br /><br />
 
-        <label for="Description">Description: </label>
-        <textarea id="Description" rows="4" cols="50" placeholder="Enter your comment" required></textarea>
+        <label for="descriptionBox">Description: </label>
+        <textarea id="descriptionBox" rows="4" cols="50" placeholder="Enter your comment" required></textarea>
         <br /><br />
 
         <div class="save">
-          <button id="savebutton" type="button" v-on:click="saveCommentToFS(12345678)">
+          <button id="saveButton" type="button" v-on:click="saveCommentToFS(12345678)">
             Save
           </button>
         </div>
@@ -111,6 +129,14 @@ export default {
       comment_id: "",
       comment_user: "",
       values: [],
+      categories: ['General', 'Education', 'Experience', 'Projects'],
+      category_icons: {
+        'General': 'badge',
+        'Education': 'school',
+        'Experience': 'business_center',
+        'Projects': 'integration_instructions',
+        'Skills': 'auto_awesome'
+      }
     }
   },
 
@@ -130,6 +156,7 @@ export default {
           let date = documentData['Upload_Date'];
           let upvotes = documentData['Number_Of_Upvotes'];
           let downvotes = documentData['Number_of_Downvotes'];
+          let category = documentData['Comment_Category']
           let repliesDataDocRef =  collection(db, 'Comments', comment_id, 'Reply_Collection');
           let snapshot_replies = await getDocs(repliesDataDocRef);
           console.log(snapshot_replies);
@@ -139,7 +166,8 @@ export default {
             let reply = {
               reply_id: replyData['Reply_ID'],
               reply_description: replyData['Description'],
-              reply_user: replyData['User']
+              reply_user: replyData['User'],
+              reply_date: replyData['Upload_Date']
 
             }
             replies.push(reply)
@@ -152,6 +180,7 @@ export default {
             date,
             upvotes,
             downvotes,
+            category,
             replies
           };
         })
@@ -229,6 +258,16 @@ export default {
     showReply(comment_id) {
       this.comment_id = comment_id;
       this.component = 'reply-input';
+    },
+
+    categorizeComment(allComments, cat) {
+      var categorized = []
+      allComments.forEach((comment) => {
+        if (comment.category == cat) {
+          categorized.push(comment);
+        }
+      })
+      return categorized;
     }
 
     
@@ -306,6 +345,19 @@ select {
   width: 20em;
 }
 
+#descriptionBox {
+  display: block;
+  width: 100%;
+  height: 30%;
+  padding: 2%;
+  font-size: 16px;
+  line-height: 1.4;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family:'Times New Roman', Times, serif;
+}
+
 #largeContainer {
   height: 800px;
   overflow-y: scroll;
@@ -319,6 +371,7 @@ select {
   height: 150px;
   width: 350px;
   padding-right: 10%;
+  position:relative; left:-80px;
 }
 
 #votesContainer {
@@ -331,7 +384,7 @@ select {
   background-color: #f5f6fa;
   border-radius: 50px;
   margin: 5%;
-  width: 40%;
+  width: 40px;
 }
 
 .vote {
@@ -393,6 +446,12 @@ select {
 
 }
 
+#commentDateContainer {
+  font-style: italic;
+  margin-left: 3%;
+  font-size: 80%;
+}
+
 #replyButton {
   height: 100%;
   margin-left: 5%;
@@ -407,8 +466,9 @@ select {
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  height: 100px;
-  width: 330px;
+  height: 150px;
+  width: 350px;
+  position:relative; left:-60px;
 }
 
 #replyVotesContainer {
@@ -434,6 +494,8 @@ select {
   color: grey;
   font-family: Rubik-Regular;
   font-weight: medium;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 #replyContentsContainer{
@@ -446,9 +508,40 @@ select {
   flex-direction: row;
   height: 10%;
   width: 90%;
-  margin-top: 10%;
-  margin-bottom: 10%;
+  margin-top: 1%;
+  margin-bottom: 40px;
 }
 
+#replyDateContainer {
+  font-style: italic;
+  margin-left: 3%;
+  font-size: 80%;
+  margin-top: 5%;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+
+.material-symbols-outlined ~ span {display:inline-block}
+
+#saveButton {
+  background-color: orange;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 78%;
+}
+
+#saveButton:hover {
+  background-color: darkorange;
+}
 
 </style>

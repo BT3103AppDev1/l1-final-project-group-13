@@ -141,17 +141,22 @@ export default {
   width: 90%;
   margin-left: 5%;
   margin-top: 5%;
+  font-family:'Times New Roman', Times, serif;
 }
 
 #saveReplyButton {
-  width: 15%;
   font-size: 80%;
   height: 20%;
-  margin-left: 5%;
+  margin-left: 74%;
   margin-top: 1%;
   background-color: orange;
   border-color: orange;
   color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 #saveReplyButton:hover {
