@@ -26,7 +26,9 @@
                     id="filledStarContainer"
                     v-if="value.userHasStarredThisResume === true"
                   >
-                    <button v-on:click="">
+                    <button
+                      v-on:click="removeFromUserStarredResumes(value.resume_id)"
+                    >
                       <img src="../assets/yellow star.png" id="star" />
                     </button>
                   </div>
@@ -181,8 +183,23 @@ export default {
       });
       console.log('added to user starred history');
     },
-    removeFromUserStarredResumes() {
+    async removeFromUserStarredResumes(resumeID) {
       // for removing from user's starred history
+      let userStarredResumesRef = doc(db, 'users', this.email);
+      var userStarredResumesArray = [];
+      let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+        (doc) => {
+          let userInfo = doc.data();
+          userStarredResumesArray = userInfo['StarredResumes'];
+        }
+      );
+
+      userStarredResumesArray = userStarredResumesArray.filter(
+        (item) => item !== resumeID
+      );
+      let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
+        StarredResumes: userStarredResumesArray,
+      });
       console.log('removed from user starred history');
     },
     showResume(resume_id, email) {
