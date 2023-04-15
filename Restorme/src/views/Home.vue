@@ -30,7 +30,7 @@
           </div>
         </div>
         <div id="pdfContainer">
-          <vue-pdf-embed v-bind:source="pdfSource" ref="pdfEmbed"/>
+          <vue-pdf-embed :source=pdfSource2 ref="pdfEmbed"/>
         </div>
       </div>
       <div id="commentsContainer">
@@ -79,8 +79,12 @@ export default {
     //this.pdfSource = requiredURL.value;
     
     console.log(requiredURL.value);
+
+    //console.log(this.email);
     
     async function loadDocs(userEmail) {
+      //console.log(this.email);
+
       const bucketRef = ref(
         storage,
 
@@ -112,6 +116,9 @@ export default {
 
         });
 
+      
+      
+      
       //this.pdfSource = url;
     }
 
@@ -126,6 +133,7 @@ export default {
       numOfResumesUploaded: 2,
       email: '',
       pdfSource: '../src/assets/ResumeTemplate.pdf',
+      pdfSource2: "https://firebasestorage.googleapis.com/v0/b/restorme-cf3da.appspot.com/o/mattlim2000%40gmail.com%2FN5HO5dVzri?alt=media&token=a2da3c58-52bd-48d7-b2b2-9e97014ec472"
     };
   },
 
@@ -136,7 +144,7 @@ export default {
     Login,
     SidebarRouter,
     Profile,
-  },
+},
 
   methods: {
 
