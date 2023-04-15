@@ -10,7 +10,6 @@
         <li v-for="value in values" :key="value.resume_id">
           <div class="resumeContainer">
             <div class="resumeContainer2">
-              <input type="checkbox" id="checkbox" v-model="checked" />
               <div class="topContainer">
                 <label for="checkbox">
                   <div id="titleContainer">
@@ -216,7 +215,6 @@ export default {
 
 #titleContainer {
   margin-left: 5%;
-  width: 600px;
   display: flex;
   flex-direction: row;
 }
