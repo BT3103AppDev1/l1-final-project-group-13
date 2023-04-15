@@ -17,20 +17,30 @@ const routes = [
     component: () => import('@/views/Home.vue'),
   },
   {
+    path: '/help',
+    name: 'Help',
+    component: () => import('@/views/Help.vue'),
+  },
+  {
+    path: '/profile/:testData',
+    name: 'ProfileWithTestData',
+    component: () => import('@/views/Profile.vue'),
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
+    meta: {
+      auth: true,
+    },
+    props: true,
   },
   {
     path: '/resumes',
     name: 'Resumes',
     component: () => import('@/views/Resumes.vue'),
   },
-  {
-    path: '/help',
-    name: 'Help',
-    component: () => import('@/views/Help.vue'),
-  },
+
   {
     path: '/homeWithZeroResumes',
     name: 'HomeWithZeroResumes',
@@ -46,7 +56,6 @@ const routes = [
   //  name: 'Previewer',
   //  component: () => import('@/views/Previewer.vue'),
   //},
-
 
   // {
   //   path: '/resumeCommentDisplay',

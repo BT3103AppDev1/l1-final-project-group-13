@@ -6,16 +6,35 @@
     <div id="contentContainer">
       <br />
       Personal details
+      <div v-if="testData != ''">
+        {{ testData }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import SidebarRouter from '../components/SidebarRouter.vue';
+import Help from './Help.vue';
+
 export default {
   name: 'Profile',
   components: {
     SidebarRouter,
+    Help,
+  },
+  data() {
+    return {
+      testData: '',
+    };
+  },
+  created() {
+    // let data = this.data;
+    // console.log('data is', data);
+    this.testData = this.$route.params.testData;
+    console.log('this.$route.params.data is', this.testData);
+    // this.testData = this.testingInfo;
+    // console.log('testingInfo is', this.testingInfo);
   },
 };
 </script>

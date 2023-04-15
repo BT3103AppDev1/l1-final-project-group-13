@@ -5,18 +5,33 @@
     </div>
     <div id="contentContainer">
       <br />
-      Help
+      <router-link :to="`/profile/${this.testData}`">Profile</router-link>
     </div>
   </div>
 </template>
 
 <script>
 import SidebarRouter from '../components/SidebarRouter.vue';
+import Profile from '@/views/Profile.vue';
+
 export default {
   name: 'Help',
   components: {
     SidebarRouter,
   },
+  data() {
+    return {
+      testData: 'New data',
+    };
+  },
+  // methods: {
+  //   handleClick() {
+  //     this.$router.push({
+  //       name: 'Profile', //use name for router push
+  //       params: { data: 'Hello123' },
+  //     });
+  //   },
+  // },
 };
 </script>
 
