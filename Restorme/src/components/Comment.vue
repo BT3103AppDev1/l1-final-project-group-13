@@ -1,26 +1,56 @@
 <template>
-  <div id="comment">
-    <div id="votesContainer">
-      <div class="vote">+</div>
-      <div class="voteCount">3</div>
-      <div class="vote">-</div>
-    </div>
-    <div id="contentContainer">
-      <div id="userDetailsContainer">test002@gmail.com</div>
-      <div id="commentDetailsContainer">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat autem
-        maiores nemo, distinctio, modi consequuntur dolorem velit doloribus iure
-        illum rem voluptatum est, enim commodi cumque corporis pariatur quaerat
-        dicta.
+  <div id = "largeContainer" >
+    <ul style = "list-style-type: none;">
+      <li v-for = "value in values" key: value.comment_id>
+    <div id="comment">
+      <div id="votesContainer">
+        <div class="vote">+</div>
+        <div class="voteCount">3</div>
+        <div class="vote">-</div>
+      </div>
+      <div id = "commentContentsContainer">
+        <div id="commentsTopHalfContent">
+          <div id="userDetailsContainer">@{{value.user}}</div>
+          <img src="../assets/reply.png" id="replyButton" v-on:click="showReply(value.comment_id)"/>
+        </div>
+        <div id="commentDetailsContainer">
+          {{value.description}}
+        </div>
       </div>
     </div>
-  </div>
+    <ul style = "list-style-type: none;">
+      <li v-for = "reply in value.replies" >
+        <div>
+            <div id="reply">
+              <div id="replyVotesContainer">
+                <div class="vote">+</div>
+                <div class="voteCount">3</div>
+                <div class="vote">-</div>
+              </div>
+              <div id = "replyContentsContainer">
+                <div id="replyTopHalfContent">
+                  <div id="userDetailsContainer">@{{ reply.reply_user }}</div>
+                </div>
+                <div id="replyDetailsContainer">
+                  {{ reply.reply_description  }}
+                </div>
+              </div>
+        </div>
+        </div>
+      </li>
+    </ul>
+     <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
+    </li>
+    </ul>
+
+   
 
   <div class="container">
     <form id="myform">
       <h2>Add Comments</h2>
 
       <div class="formli">
+
         <label for="commentType">Category:</label>
         <select id="category" v-model="selected">
           <option disabled value="">Please Select a Category</option>
@@ -33,136 +63,179 @@
         <br /><br />
 
         <label for="Description">Description: </label>
-        <textarea
-          id="Description"
-          rows="4"
-          cols="35"
-          placeholder="Enter your comment"
-          required
-        ></textarea>
+        <textarea id="Description" rows="4" cols="50" placeholder="Enter your comment" required></textarea>
         <br /><br />
 
         <div class="save">
-          <button
-            id="savebutton"
-            type="button"
-            v-on:click="saveCommentToFS(12345678)"
-          >
+          <button id="savebutton" type="button" v-on:click="saveCommentToFS(12345678)">
             Save
           </button>
         </div>
       </div>
     </form>
   </div>
+  </div>
 </template>
 
 <script>
-import { onAuthStateChanged } from '@firebase/auth';
-import { auth } from '../firebase';
-import { db } from '../firebase';
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
-import { getFirestore } from 'firebase/firestore';
+import { auth } from "../firebase";
+import { db } from "../firebase";
+import { addDoc, collection, doc, setDoc, updateDoc, getDocs } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
+import ReplyInput from "./ReplyInput.vue";
+
+const comments_collection = collection(db, "Comments");
+console.log(comments_collection)
+
 
 export default {
-  data() {
-    return {
-      user: false,
-      useremail: '',
-    };
+  components: {
+    "reply-input": ReplyInput
   },
+
   mounted() {
+    const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
-        this.useremail = user.email;
+        this.getCommentsData();
       }
     });
   },
+
+  data() {
+    return {
+      component: null,
+      new_reply: "",
+      comment_id: "",
+      comment_user: "",
+      values: [],
+    }
+  },
+
   methods: {
+
+    async getCommentsData() {
+      let commentsDataDocRef = collection(db, 'Comments');
+      let snapshot = await getDocs(commentsDataDocRef);
+      this.values = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          let documentData = doc.data();
+          console.log(documentData);
+          let comment_id = documentData['Comment_ID']
+          let description = documentData['Description'];
+          // console.log(name);
+          let user = documentData['User'];
+          let date = documentData['Upload_Date'];
+          let upvotes = documentData['Number_Of_Upvotes'];
+          let downvotes = documentData['Number_of_Downvotes'];
+          let repliesDataDocRef =  collection(db, 'Comments', comment_id, 'Reply_Collection');
+          let snapshot_replies = await getDocs(repliesDataDocRef);
+          console.log(snapshot_replies);
+          var replies = []
+          snapshot_replies.forEach((reply_doc) => {
+            let replyData = reply_doc.data()
+            let reply = {
+              reply_id: replyData['Reply_ID'],
+              reply_description: replyData['Description'],
+              reply_user: replyData['User']
+
+            }
+            replies.push(reply)
+          })
+          console.log(replies)
+          return {
+            comment_id,
+            description,
+            user,
+            date,
+            upvotes,
+            downvotes,
+            replies
+          };
+        })
+      );
+    },
+
     async saveCommentToFS(resumeID) {
-      const commentCollection = collection(db, 'Comment_Collection');
+      const commentCollection = collection(db, "Comment_Collection")
       const user = auth.currentUser;
       const userUID = auth.currentUser.uid;
-      console.log('IN AC');
+      console.log("IN AC")
 
       /*
        * A COMMENT SHOULD HAVE
        * COMMENT_ID /
        * COMMENT_TYPE /
-       * USER_UID /
-       * RESUME_ID /
-       * DATE /
+       * USER_UID / 
+       * RESUME_ID / 
+       * DATE / 
        * DESCRIPTION (COMMENT) /
        * NO. OF UPVOTES /
        * NO. OF DOWNVOTES /
-       * MARKED USEFUL /
+       * MARKED USEFUL / 
        * REPLIES - TBC
        */
       let resume_id = resumeID;
-      let comment = document.getElementById('Description').value;
-      let category = document.getElementById('category');
-      let categoryValue = category.value;
+      let comment = document.getElementById("Description").value;
+      let category = document.getElementById("category");
+      let categoryValue = category.value
       let categoryText = category.options[category.selectedIndex].text;
 
       let currentdate = new Date();
-      let dateTime =
-        currentdate.getDate() +
-        '/' +
-        (currentdate.getMonth() + 1) +
-        '/' +
-        currentdate.getFullYear() +
-        ' @ ' +
-        currentdate.getHours() +
-        ':' +
-        currentdate.getMinutes() +
-        ':' +
-        currentdate.getSeconds();
+      let dateTime = currentdate.getDate() + "/"
+        + (currentdate.getMonth() + 1) + "/"
+        + currentdate.getFullYear() + " @ "
+        + currentdate.getHours() + ":"
+        + currentdate.getMinutes() + ":"
+        + currentdate.getSeconds();
       //let uploadDate = Math.floor(Date.now() /1000)
 
       let upvotesNum = 0;
       let downvotesNum = 0;
       let markedUseful = false;
-      let replies = 'to be confirmed';
+      let replies = "to be confirmed";
 
-      alert(
-        ' Saving your data for Comment : ' +
-          comment +
-          categoryText +
-          dateTime +
-          userUID +
-          upvotesNum +
-          downvotesNum +
-          markedUseful +
-          replies
-      );
+
+      alert(" Saving your data for Comment : " + comment + categoryText + dateTime +
+        userUID + upvotesNum + downvotesNum + markedUseful + replies)
 
       try {
-        const docRef = await addDoc(collection(db, 'Comments'), {
-          Comment_ID: '',
-          Resume_ID: resume_id,
-          Comment_Category: categoryText,
-          User: userUID,
-          Upload_Date: dateTime,
-          Description: comment,
-          Number_Of_Upvotes: upvotesNum,
-          Number_of_Downvotes: downvotesNum,
-          Marked_Useful: markedUseful,
-          Replies: replies,
-        });
+        const docRef = await addDoc(collection(db, "Comments"), {
+          Comment_ID: "", Resume_ID: resume_id, Comment_Category: categoryText, User: userUID, Upload_Date: dateTime,
+          Description: comment, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
+          Marked_Useful: markedUseful, Replies: replies
+        })
 
-        console.log(String(docRef.id));
-        const commentsRef = doc(db, 'Comments', String(docRef.id));
+        console.log(String(docRef.id))
+        const commentsRef = doc(db, "Comments", String(docRef.id))
         await updateDoc(commentsRef, {
-          Comment_ID: String(docRef.id),
-        });
+          Comment_ID: String(docRef.id)
+        })
         document.getElementById('myform').reset();
-        this.$emit('added');
-      } catch (error) {
-        console.error('Error adding document: ', error);
+        this.$emit("added")
       }
+      catch (error) {
+        console.error("Error adding document: ", error);
+      }
+
     },
-  },
-};
+
+    cancelComment() {
+      this.component = null;
+    },
+
+    showReply(comment_id) {
+      this.comment_id = comment_id;
+      this.component = 'reply-input';
+    }
+
+    
+
+
+  }
+}
 /* 
 
 export default {
@@ -217,7 +290,7 @@ form {
   text-align: left;
   align-items: center;
   margin: auto;
-  height: 100%;
+  height: 50%;
 }
 
 input:hover {
@@ -225,25 +298,30 @@ input:hover {
   border-radius: 2px;
 }
 
-input[type='text'] {
+input[type="text"] {
   width: 20em;
 }
 
 select {
-  width: 15em;
+  width: 20em;
+}
+
+#largeContainer {
+  height: 800px;
+  overflow-y: scroll;
 }
 
 #comment {
   display: flex;
-  flex-direction: row;
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  margin-bottom: 20px;
+  height: 150px;
+  width: 350px;
+  padding-right: 10%;
 }
 
 #votesContainer {
-  flex: 1;
   /* background-color: rgb(0, 153, 255); */
   display: flex;
   justify-content: center;
@@ -252,7 +330,8 @@ select {
   flex-direction: column;
   background-color: #f5f6fa;
   border-radius: 50px;
-  margin: 20px;
+  margin: 5%;
+  width: 40%;
 }
 
 .vote {
@@ -274,11 +353,18 @@ select {
   color: #5357b6;
 }
 
-#contentContainer {
-  flex: 15;
+#commentContentsContainer{
+  margin-left: 1%;
+}
+
+
+#commentsTopHalfContent {
   display: flex;
-  flex-direction: column;
-  /* background-color: rgb(255, 0, 0); */
+  flex-direction: row;
+  height: 10%;
+  width: 90%;
+  margin-top: 10%;
+  margin-bottom: 10%;
 }
 
 @font-face {
@@ -294,20 +380,75 @@ select {
 #userDetailsContainer {
   flex: 1;
   /* background-color: rgb(0, 255, 0); */
-  padding: 10px;
-  margin-top: 10px;
   font-family: Rubik-Medium;
-  font-size: 14px;
-  margin-bottom: -5px;
+  font-size: 100%;
+  margin-bottom: -5%;
 }
 
 #commentDetailsContainer {
-  flex: 3;
   /* background-color: rgb(255, 0, 255); */
-  padding: 10px;
   color: grey;
   font-family: Rubik-Regular;
   font-weight: medium;
-  margin-bottom: 5px;
+
 }
+
+#replyButton {
+  height: 100%;
+  margin-left: 5%;
+}
+
+#replyButton:hover {
+  background-color: lavender;
+}
+
+#reply {
+  display: flex;
+  /* background-color: grey; */
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  height: 100px;
+  width: 330px;
+}
+
+#replyVotesContainer {
+  /* background-color: rgb(0, 153, 255); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Rubik-Medium;
+  flex-direction: column;
+  background-color: #f5f6fa;
+  border-radius: 50px;
+  margin: 5%;
+  width: 10%;
+}
+
+#replyContentsContainer{
+  margin-left: 1%;
+}
+
+
+#replyDetailsContainer {
+  /* background-color: rgb(255, 0, 255); */
+  color: grey;
+  font-family: Rubik-Regular;
+  font-weight: medium;
+}
+
+#replyContentsContainer{
+  margin-left: 1%;
+}
+
+
+#replyTopHalfContent {
+  display: flex;
+  flex-direction: row;
+  height: 10%;
+  width: 90%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+
 </style>
