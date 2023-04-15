@@ -12,30 +12,23 @@
               <br /><br />
             </div>
             <div id="uploadResumeButtonContainer">
-              <input type="file" ref="myfile" /> <br /><br />
-              <input
-                type="text"
-                placeholder="Enter job title here..."
-                id="myInput"
-              />
-              <br /><br />
-
               <button @click="upload" id="uploadResumeButton">
                 Upload Resume (.pdf)
               </button>
             </div>
           </div>
-          <div
-            id="scrollViewOfResumesContainer"
-            v-for="(button, index) in resumeButtons"
-            :key="index"
-          >
-            <button @click="downloadDoc(button.documentRef)">
-              {{ button.name }}
-            </button>
+          <div id="scrollViewOfResumesContainer">
+            <div v-for="button in resumeButtons" :key="button.name">
+              <button
+                id="buttonsContainer"
+                @click="downloadDoc(button.documentRef)"
+              >
+                {{ button.name }}
+              </button>
+            </div>
           </div>
         </div>
-        <div id="pdfContainer">
+        <div id="pdfContainer" v-if="pdfSource != null">
           <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
         </div>
       </div>
@@ -68,68 +61,19 @@ export default {
       if (user) {
         this.user = user;
         this.email = user.email;
+        this.loadDocs(this.email);
       } else {
         this.user = false;
       }
     });
   },
-
-  setup() {
-    const resumeButtons = ref2([]);
-
-    const requiredURL = { value: null };
-    //this.pdfSource = requiredURL.value;
-
-    console.log(requiredURL.value);
-
-    async function loadDocs(userEmail) {
-      const bucketRef = ref(
-        storage,
-
-        // i need help with linking the useremail here
-        'gs://restorme-cf3da.appspot.com/mattlim2000@gmail.com'
-      );
-      const docList = await listAll(bucketRef);
-
-      docList.items.forEach((documentRef) => {
-        const name = documentRef.name;
-        resumeButtons.value.push({ name, documentRef });
-      });
-    }
-
-    async function downloadDoc(documentRef) {
-      const requiredRef = ref(storage, documentRef.fullPath);
-
-      const url = getDownloadURL(requiredRef)
-        .then((url) => {
-          //console.log(url);
-
-          // i need help with changing the pdfSource here
-          requiredURL.value = url;
-          console.log(this.email);
-          console.log('updated!' + requiredURL.value);
-          console.log('before, pdfSource is: ' + this.pdfSource);
-          this.pdfSource = requiredURL.value;
-          console.log('the pdf source is now ' + this.pdfSource);
-        })
-        .catch((error) => {
-          console.error('error getting url:', error);
-        });
-
-      //this.pdfSource = url;
-    }
-
-    loadDocs();
-
-    return { resumeButtons, downloadDoc, requiredURL };
-  },
-
   data() {
     return {
       user: false,
       numOfResumesUploaded: 2,
       email: '',
-      pdfSource: '../src/assets/ResumeTemplate.pdf',
+      pdfSource: null,
+      resumeButtons: [],
     };
   },
 
@@ -143,20 +87,33 @@ export default {
   },
 
   methods: {
-    upload: function () {
-      const folder = String(this.email);
-      var jobTitle = document.getElementById('myInput').value;
+    async loadDocs(userEmail) {
+      const bucketRef = ref(
+        storage,
+        'gs://restorme-cf3da.appspot.com/' + userEmail
+      );
+      const docList = await listAll(bucketRef);
 
-      const final_path = folder + '/' + String(jobTitle);
-      const storageRef = ref(storage, final_path);
+      this.resumeButtons = await Promise.all(
+        docList.items.map(async (documentRef) => {
+          let name = documentRef.name;
+          return { name, documentRef };
+        })
+      );
+    },
+    async downloadDoc(documentRef) {
+      const requiredRef = ref(storage, documentRef.fullPath);
 
-      alert('Confirm that you are uploading the resume for: ' + jobTitle);
-      uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
-        console.log('uploaded!');
-        //window.location.reload();
-      });
-
-      document.getElementById('myInput').value = '';
+      getDownloadURL(requiredRef)
+        .then((url) => {
+          this.pdfSource = url;
+        })
+        .catch((error) => {
+          console.error('error getting url:', error);
+        });
+    },
+    upload() {
+      this.$router.push('/uploadResumes');
     },
   },
 };
@@ -199,10 +156,9 @@ export default {
 }
 
 #resumeHeaderContainer {
-  flex: 1;
+  flex: 0.2;
   /* background-color: rgb(255, 0, 0); */
   display: flex;
-  align-items: center;
 }
 
 #resumeHeader {
@@ -230,11 +186,15 @@ export default {
   overflow-y: scroll;
 }
 
+#buttonsContainer {
+  margin-bottom: 10px;
+}
+
 #pdfContainer {
   flex: 3.5;
   /* background-color: rgb(0, 0, 255); */
   overflow-y: scroll;
-  width: 100%;
+  /* width: 100%; */
   border: 2px solid black;
   /* padding: 10px; */
 }
