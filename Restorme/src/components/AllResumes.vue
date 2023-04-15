@@ -1,32 +1,27 @@
 <template>
   <div class="container" v-if="resume_id === null">
-    <!-- <div class="topFilterBar">
+    <div class="topFilterBar">
       <button class="filterButtons">All Resumes</button>
       <button class="filterButtons">Starred Resumes</button>
-    </div> -->
+    </div>
     <div class="overflow-scroll" id="resumeListContainer">
       <br />
       <ul class="resumeList">
         <li v-for="value in values" :key="value.resume_id">
           <div class="resumeContainer">
             <div class="resumeContainer2">
-              <input type="checkbox" id="checkbox" v-model="checked" />
               <div class="topContainer">
-                <label for="checkbox">
-                  <div id="titleContainer">
-                    <button
-                      id="resumeLink"
-                      @click="showResume(value.resume_id, value.email)"
-                    >
-                      <h2 id="title">{{ value.title }}</h2>
-                    </button>
-                  </div>
-                </label>
+                <div id="starContainer">star</div>
+                <div id="titleContainer">
+                  <button
+                    id="resumeLink"
+                    @click="showResume(value.resume_id, value.email)"
+                  >
+                    <h2 id="title">{{ value.title }}</h2>
+                  </button>
+                </div>
                 <div class="uploadDetails">
                   Uploaded by {{ value.email }} on {{ value.date }}
-                </div>
-                <div class="goToResumeContainer">
-                  <button id="goToResume">></button>
                 </div>
               </div>
             </div>
@@ -53,7 +48,7 @@
         </button>
       </div>
       <div id="pdfDisplayContainer">
-        <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" :width="600" />
+        <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
       </div>
     </div>
     <div id="commentsContainer">Comments</div>
@@ -216,9 +211,7 @@ export default {
 
 #titleContainer {
   margin-left: 5%;
-  width: 600px;
   display: flex;
-  flex-direction: row;
 }
 
 #title {
@@ -232,6 +225,7 @@ export default {
   margin-left: 2%;
   margin-bottom: 2%;
 }
+
 .tags {
   display: inline;
   border-radius: 12px;
@@ -289,13 +283,13 @@ export default {
 }
 
 #pdfDisplayContainer {
-  flex: 1;
+  /* flex: 1; */
   /* background-color: rgb(255, 255, 0); */
   align-self: center;
   justify-content: center;
   height: 95vh;
-  display: flex;
-  overflow-y: scroll;
+  /* display: flex; */
+  /* overflow-y: scroll; */
   width: 100%;
   /* border: 2px solid black; */
 }

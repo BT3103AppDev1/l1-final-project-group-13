@@ -1,10 +1,25 @@
 <template>
-  <div v-if="numOfResumesUploaded">
+  <div>
     <div id="homeContainer">
       <div id="routerContainer">
         <SidebarRouter />
       </div>
-      <div id="resumeContainer">
+      <div id="resumeContainer" v-if="numOfResumesUploaded === 0">
+        <div id="listOfResumesZeroResumeContainer">
+          <br />
+          <h3>
+            You have not uploaded any resumes yet. Upload your first resume to
+            receive feedback now!
+          </h3>
+          <br />
+          <div id="uploadResumeButtonZeroResumeContainer">
+            <button @click="upload" id="uploadResumeButtonZeroResume">
+              Upload Resumes
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="resumeContainer" v-if="numOfResumesUploaded > 0">
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
             <div id="resumeHeader">
@@ -12,31 +27,24 @@
               <br /><br />
             </div>
             <div id="uploadResumeButtonContainer">
-              <input type="file" ref="myfile" /> <br /><br />
-              <input
-                type="text"
-                placeholder="Enter job title here..."
-                id="myInput"
-              />
-              <br /><br />
-
               <button @click="upload" id="uploadResumeButton">
                 Upload Resume (.pdf)
               </button>
             </div>
           </div>
-          <div
-            id="scrollViewOfResumesContainer"
-            v-for="(button, index) in resumeButtons"
-            :key="index"
-          >
-            <button @click="downloadDoc(button.documentRef)">
-              {{ button.name }}
-            </button>
+          <div id="scrollViewOfResumesContainer">
+            <div v-for="button in resumeButtons" :key="button.name">
+              <button
+                id="buttonsContainer"
+                @click="downloadDoc(button.documentRef)"
+              >
+                {{ button.name }}
+              </button>
+            </div>
           </div>
         </div>
-        <div id="pdfContainer">
-          <vue-pdf-embed :source="pdfSource" ref="pdfEmbed"/>
+        <div id="pdfContainer" v-if="pdfSource != null">
+          <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
         </div>
       </div>
       <div id="commentsContainer">
@@ -67,69 +75,20 @@ export default {
       if (user) {
         this.user = user;
         this.email = user.email;
+        this.loadDocs(this.email);
       } else {
         this.user = false;
       }
     });
   },
-
-  setup() {
-    const resumeButtons = ref2([]);
-
-    const requiredURL = {value: null};
-    //this.pdfSource = requiredURL.value;
-    
-    console.log(requiredURL.value);
-    
-    async function loadDocs(userEmail) {
-      const bucketRef = ref(
-        storage,
-
-        // i need help with linking the useremail here
-        'gs://restorme-cf3da.appspot.com/mattlim2000@gmail.com'
-      );
-      const docList = await listAll(bucketRef);
-
-      docList.items.forEach((documentRef) => {
-        const name = documentRef.name;
-        resumeButtons.value.push({ name, documentRef });
-      });
-    }
-
-    async function downloadDoc(documentRef) {
-      const requiredRef = ref(storage, documentRef.fullPath);
-
-      const url = getDownloadURL(requiredRef)
-        .then((url) => {
-          //console.log(url);
-
-          // i need help with changing the pdfSource here
-          requiredURL.value = url;
-          console.log(this.email);
-          console.log("updated!" + requiredURL.value);
-          console.log("before, pdfSource is: " + this.pdfSource);
-          this.pdfSource = requiredURL.value;
-          console.log("the pdf source is now " + this.pdfSource);
-
-        })
-        .catch((error) => {
-          console.error('error getting url:', error);
-        });
-
-      //this.pdfSource = url;
-    }
-
-    loadDocs();
-
-    return { resumeButtons, downloadDoc, requiredURL };
-  },
-
   data() {
     return {
       user: false,
-      numOfResumesUploaded: 2,
+      numOfResumesUploaded: 0,
       email: '',
-      pdfSource: '../src/assets/ResumeTemplate.pdf',
+      pdfSource: null,
+      resumeButtons: [],
+      resumeID: null,
     };
   },
 
@@ -143,20 +102,36 @@ export default {
   },
 
   methods: {
-    upload: function () {
-      const folder = String(this.email);
-      var jobTitle = document.getElementById('myInput').value;
+    async loadDocs(userEmail) {
+      const bucketRef = ref(
+        storage,
+        'gs://restorme-cf3da.appspot.com/' + userEmail
+      );
+      const docList = await listAll(bucketRef);
 
-      const final_path = folder + '/' + String(jobTitle);
-      const storageRef = ref(storage, final_path);
+      this.resumeButtons = await Promise.all(
+        docList.items.map(async (documentRef) => {
+          let name = documentRef.name;
+          this.numOfResumesUploaded += 1;
+          return { name, documentRef };
+        })
+      );
+    },
+    async downloadDoc(documentRef) {
+      const requiredRef = ref(storage, documentRef.fullPath);
 
-      alert('Confirm that you are uploading the resume for: ' + jobTitle);
-      uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
-        console.log('uploaded!');
-        //window.location.reload();
-      });
-
-      document.getElementById('myInput').value = '';
+      getDownloadURL(requiredRef)
+        .then((url) => {
+          this.pdfSource = url;
+          this.resumeID = documentRef.name;
+          console.log('ResumeID = ', this.resumeID);
+        })
+        .catch((error) => {
+          console.error('error getting url:', error);
+        });
+    },
+    upload() {
+      this.$router.push('/uploadResumes');
     },
   },
 };
@@ -189,6 +164,27 @@ export default {
   flex-direction: column;
 }
 
+#uploadResumeButtonZeroResume {
+  border-radius: 15;
+  padding: 10px;
+}
+
+h3 {
+  font-family: 'Rubik-Regular';
+  font-size: 18px;
+  color: #000000;
+}
+
+@font-face {
+  font-family: 'Rubik-Regular';
+  src: local('Rubik-Regular');
+}
+
+@font-face {
+  font-family: 'Rubik-Medium';
+  src: local('Rubik-Medium');
+}
+
 #listOfResumesContainer {
   flex: 1;
   /* background-color: rgb(255, 0, 212); */
@@ -198,11 +194,20 @@ export default {
   height: 150px;
 }
 
-#resumeHeaderContainer {
+#listOfResumesZeroResumeContainer {
   flex: 1;
+  /* background-color: rgb(255, 0, 212); */
+  vertical-align: top;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  padding: 20px;
+}
+
+#resumeHeaderContainer {
+  flex: 0.2;
   /* background-color: rgb(255, 0, 0); */
   display: flex;
-  align-items: center;
 }
 
 #resumeHeader {
@@ -240,6 +245,15 @@ export default {
   background-color: darkorange;
 }
 
+#uploadResumeButtonZeroResumeContainer {
+  flex: 1;
+  /* background-color: rgb(0, 255, 0); */
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  margin-right: 20px;
+}
+
 #scrollViewOfResumesContainer {
   flex: 3;
   /* background-color: rgb(255, 0, 212); */
@@ -247,11 +261,15 @@ export default {
   overflow-y: scroll;
 }
 
+#buttonsContainer {
+  margin-bottom: 10px;
+}
+
 #pdfContainer {
   flex: 3.5;
   /* background-color: rgb(0, 0, 255); */
   overflow-y: scroll;
-  width: 100%;
+  /* width: 100%; */
   border: 2px solid black;
   /* padding: 10px; */
 }
