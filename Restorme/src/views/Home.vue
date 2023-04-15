@@ -74,6 +74,7 @@ export default {
       email: '',
       pdfSource: null,
       resumeButtons: [],
+      resumeID: null,
     };
   },
 
@@ -107,6 +108,8 @@ export default {
       getDownloadURL(requiredRef)
         .then((url) => {
           this.pdfSource = url;
+          this.resumeID = documentRef.name;
+          console.log('ResumeID = ', this.resumeID);
         })
         .catch((error) => {
           console.error('error getting url:', error);
