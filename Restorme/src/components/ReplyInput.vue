@@ -25,7 +25,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export default {
   name: 'ReplyInput',
-  props: ['comment_id'],
+  props: ['comment_id', 'resume_id'],
   
   mounted() {
     const auth = getAuth();

@@ -407,7 +407,7 @@ select {
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  height: 150px;
+  height: 100px;
   width: 330px;
 }
 
