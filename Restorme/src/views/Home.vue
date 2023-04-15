@@ -38,7 +38,7 @@
                 id="buttonsContainer"
                 @click="downloadDoc(button.documentRef)"
               >
-                {{ button.name }}
+                {{ button.resumeTitle }}
               </button>
             </div>
           </div>
@@ -62,9 +62,18 @@ import CommentDisplay from '../components/CommentDisplay.vue';
 import { storage } from '../firebase';
 import { ref as ref2 } from 'vue';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
+import {
+  addDoc,
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  getDoc,
+} from 'firebase/firestore';
 import Login from '@/views/Login.vue';
 import SidebarRouter from '@/components/SidebarRouter.vue';
 import Profile from '@/views/Profile.vue';
+import { db } from '../firebase';
 
 export default {
   name: 'Home',
@@ -114,11 +123,31 @@ export default {
       this.resumeButtons = await Promise.all(
         docList.items.map(async (documentRef) => {
           let name = documentRef.name;
+          const resumeDoc = doc(db, 'ResumeInfo', name);
+          let resumeTitle = '';
+          const getResumeTitle = await getDoc(resumeDoc).then((doc) => {
+            console.log('Document data:', doc);
+            let resumeInfo = doc.data();
+            console.log('ResumeInfo: ', resumeInfo);
+            resumeTitle = resumeInfo['Title'];
+          });
           this.numOfResumesUploaded += 1;
-          return { name, documentRef };
+          // console.log(resumeTitle);
+          return { name, documentRef, resumeTitle };
         })
       );
     },
+    // async getResumeTitle() {
+    //   let dummyDataDocRef = collection(db, 'ResumeTestData');
+    //   let snapshot = await getDocs(dummyDataDocRef);
+    //   this.values = await Promise.all(
+    //     snapshot.docs.map(async (doc) => {
+    //       let documentData = doc.data();
+    //       // console.log(documentData);
+    //       let additionalInfo = documentData['Additional Info'];
+    //       // console.log(name);
+    //       let title = documentData['Title'];
+    // },
     async downloadDoc(documentRef) {
       const requiredRef = ref(storage, documentRef.fullPath);
 
