@@ -57,29 +57,28 @@
 </template>
 
 <script>
-import { onAuthStateChanged } from "@firebase/auth";
-import { auth } from "../firebase";
-import { db } from "../firebase";
-import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
-
+import { onAuthStateChanged } from '@firebase/auth';
+import { auth } from '../firebase';
+import { db } from '../firebase';
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 export default {
   data() {
-        return {
-            user: false,
-            useremail: '',
-        }
-    },
-    mounted() {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                this.user = user;
-                this.useremail = user.email;
-            }
-        });
-    },
-  methods: {  
+    return {
+      user: false,
+      useremail: '',
+    };
+  },
+  mounted() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+        this.useremail = user.email;
+      }
+    });
+  },
+  methods: {
     async saveCommentToFS(resumeID) {
       const commentCollection = collection(db, 'Comment_Collection');
       const user = auth.currentUser;

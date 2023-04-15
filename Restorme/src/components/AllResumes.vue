@@ -53,7 +53,7 @@
         </button>
       </div>
       <div id="pdfDisplayContainer">
-        <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" :width="600" />
+        <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
       </div>
     </div>
     <div id="commentsContainer">Comments</div>
@@ -289,13 +289,13 @@ export default {
 }
 
 #pdfDisplayContainer {
-  flex: 1;
+  /* flex: 1; */
   /* background-color: rgb(255, 255, 0); */
   align-self: center;
   justify-content: center;
   height: 95vh;
-  display: flex;
-  overflow-y: scroll;
+  /* display: flex; */
+  /* overflow-y: scroll; */
   width: 100%;
   /* border: 2px solid black; */
 }
