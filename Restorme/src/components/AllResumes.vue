@@ -134,7 +134,7 @@ export default {
     async downloadDoc(userEmail, resumeID) {
       const requiredRef = ref(
         storage,
-        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID + '.pdf'
+        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID
       );
 
       const url = getDownloadURL(requiredRef)
