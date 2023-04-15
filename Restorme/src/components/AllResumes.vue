@@ -93,22 +93,21 @@ export default {
   },
   methods: {
     async getdummyData() {
-      let dummyDataDocRef = collection(db, 'ResumeTestData');
+      let dummyDataDocRef = collection(db, 'ResumeInfo');
       let snapshot = await getDocs(dummyDataDocRef);
       this.values = await Promise.all(
         snapshot.docs.map(async (doc) => {
           let documentData = doc.data();
           // console.log(documentData);
-          let additionalInfo = documentData['Additional Info'];
+          let additionalInfo = documentData['Additional_Info'];
           // console.log(name);
           let title = documentData['Title'];
-          console.log(title);
+          // console.log(title);
           let role = documentData['Role'];
           let location = documentData['Location'];
           let experience = documentData['Experience'];
-          let date = documentData['Date'].toDate().toDateString();
-          let resume_id = documentData['ResumeID'];
-          let user_id = documentData['UserID'];
+          let date = documentData['Date'];
+          let resume_id = documentData['Resume_Id'];
           let email = documentData['Email'];
           return {
             additionalInfo,
@@ -118,7 +117,6 @@ export default {
             experience,
             date,
             resume_id,
-            user_id,
             email,
           };
         })
