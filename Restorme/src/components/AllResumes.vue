@@ -11,7 +11,11 @@
           <div class="resumeContainer">
             <div class="resumeContainer2">
               <div class="topContainer">
-                <div id="starContainer">star</div>
+                <div id="starContainer">
+                  <button v-on:click="">
+                    <img src="../assets/empty star.png" id="emptyStar" />
+                  </button>
+                </div>
                 <div id="titleContainer">
                   <button
                     id="resumeLink"
@@ -58,7 +62,6 @@
 <script>
 import { db } from '../firebase.js';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import { storage } from '../firebase';
@@ -67,7 +70,6 @@ import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 export default {
   name: 'AllResumes',
   components: {
-    PerfectScrollbar,
     VuePdfEmbed,
   },
   data() {
@@ -134,7 +136,7 @@ export default {
     async downloadDoc(userEmail, resumeID) {
       const requiredRef = ref(
         storage,
-        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID + '.pdf'
+        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID
       );
 
       const url = getDownloadURL(requiredRef)
@@ -203,13 +205,29 @@ export default {
 .topContainer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   width: 100%;
+}
+
+#starContainer {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  /* background-color: blue; */
+}
+
+#emptyStar {
+  width: 20px;
+  height: 20px;
+  margin-left: 5%;
+  margin-top: 10%;
 }
 
 #titleContainer {
   margin-left: 5%;
   display: flex;
+  flex: 5;
+  /* background-color: red; */
 }
 
 #title {
