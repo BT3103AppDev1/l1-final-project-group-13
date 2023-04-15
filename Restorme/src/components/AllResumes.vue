@@ -1,9 +1,9 @@
 <template>
   <div class="container" v-if="resume_id === null">
-    <!-- <div class="topFilterBar">
+    <div class="topFilterBar">
       <button class="filterButtons">All Resumes</button>
       <button class="filterButtons">Starred Resumes</button>
-    </div> -->
+    </div>
     <div class="overflow-scroll" id="resumeListContainer">
       <br />
       <ul class="resumeList">
@@ -11,21 +11,17 @@
           <div class="resumeContainer">
             <div class="resumeContainer2">
               <div class="topContainer">
-                <label for="checkbox">
-                  <div id="titleContainer">
-                    <button
-                      id="resumeLink"
-                      @click="showResume(value.resume_id, value.email)"
-                    >
-                      <h2 id="title">{{ value.title }}</h2>
-                    </button>
-                  </div>
-                </label>
+                <div id="starContainer">star</div>
+                <div id="titleContainer">
+                  <button
+                    id="resumeLink"
+                    @click="showResume(value.resume_id, value.email)"
+                  >
+                    <h2 id="title">{{ value.title }}</h2>
+                  </button>
+                </div>
                 <div class="uploadDetails">
                   Uploaded by {{ value.email }} on {{ value.date }}
-                </div>
-                <div class="goToResumeContainer">
-                  <button id="goToResume">></button>
                 </div>
               </div>
             </div>
@@ -216,7 +212,6 @@ export default {
 #titleContainer {
   margin-left: 5%;
   display: flex;
-  flex-direction: row;
 }
 
 #title {
@@ -230,6 +225,7 @@ export default {
   margin-left: 2%;
   margin-bottom: 2%;
 }
+
 .tags {
   display: inline;
   border-radius: 12px;
