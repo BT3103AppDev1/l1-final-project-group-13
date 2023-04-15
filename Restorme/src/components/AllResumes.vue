@@ -12,16 +12,31 @@
             <div class="resumeContainer2">
               <div class="topContainer">
                 <div id="starContainer">
-                  <button v-on:click="">
-                    <img src="../assets/empty star.png" id="emptyStar" />
-                  </button>
+                  <div
+                    id="emptyStarContainer"
+                    v-if="value.userHasStarredThisResume === false"
+                  >
+                    <button
+                      v-on:click="addToUserStarredResumes(value.resume_id)"
+                    >
+                      <img src="../assets/empty star.png" id="star" />
+                    </button>
+                  </div>
+                  <div
+                    id="filledStarContainer"
+                    v-if="value.userHasStarredThisResume === true"
+                  >
+                    <button v-on:click="">
+                      <img src="../assets/yellow star.png" id="star" />
+                    </button>
+                  </div>
                 </div>
                 <div id="titleContainer">
                   <button
                     id="resumeLink"
                     @click="showResume(value.resume_id, value.email)"
                   >
-                    <h2 id="title">{{ value.title }}</h2>
+                    {{ value.title }}
                   </button>
                 </div>
                 <div class="uploadDetails">
@@ -61,16 +76,24 @@
 
 <script>
 import { db } from '../firebase.js';
-import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import { storage } from '../firebase';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
+import Comment from './Comment.vue';
 
 export default {
   name: 'AllResumes',
   components: {
     VuePdfEmbed,
+    Comment,
   },
   data() {
     return {
@@ -89,6 +112,7 @@ export default {
         this.user = user;
         this.getdummyData();
         this.userID = user.uid;
+        this.email = user.email;
         // console.log(this.userID);
       }
     });
@@ -98,8 +122,8 @@ export default {
       let dummyDataDocRef = collection(db, 'ResumeInfo');
       let snapshot = await getDocs(dummyDataDocRef);
       this.values = await Promise.all(
-        snapshot.docs.map(async (doc) => {
-          let documentData = doc.data();
+        snapshot.docs.map(async (document) => {
+          let documentData = document.data();
           // console.log(documentData);
           let additionalInfo = documentData['Additional_Info'];
           // console.log(name);
@@ -111,6 +135,21 @@ export default {
           let date = documentData['Date'];
           let resume_id = documentData['Resume_Id'];
           let email = documentData['Email'];
+
+          //need to check if the user has starred this resume via value.userStarredResume
+          let userHasStarredThisResume = null;
+          let userStarredResumesRef = doc(db, 'users', this.email);
+          let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+            (doc) => {
+              console.log('Document data:', doc);
+              let userInfo = doc.data();
+              console.log('UserInfo: ', userInfo);
+              let userStarredResumes = userInfo['StarredResumes'];
+              console.log('userStarredResumes: ', userStarredResumes);
+              userHasStarredThisResume = userStarredResumes.includes(resume_id);
+            }
+          );
+
           return {
             additionalInfo,
             title,
@@ -120,9 +159,31 @@ export default {
             date,
             resume_id,
             email,
+            userHasStarredThisResume,
           };
         })
       );
+    },
+    async addToUserStarredResumes(resumeID) {
+      // for adding to user's starred history
+      let userStarredResumesRef = doc(db, 'users', this.email);
+      var userStarredResumesArray = [];
+      let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+        (doc) => {
+          let userInfo = doc.data();
+          userStarredResumesArray = userInfo['StarredResumes'];
+        }
+      );
+
+      userStarredResumesArray.push(resumeID);
+      let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
+        StarredResumes: userStarredResumesArray,
+      });
+      console.log('added to user starred history');
+    },
+    removeFromUserStarredResumes() {
+      // for removing from user's starred history
+      console.log('removed from user starred history');
     },
     showResume(resume_id, email) {
       console.log('resumeid = ', resume_id);
@@ -216,16 +277,20 @@ export default {
   /* background-color: blue; */
 }
 
-#emptyStar {
+#star {
   width: 20px;
   height: 20px;
   margin-left: 5%;
   margin-top: 10%;
 }
 
+#resumeLink {
+  padding: 10px;
+}
+
 #titleContainer {
   margin-left: 5%;
-  display: flex;
+  /* display: flex; */
   flex: 5;
   /* background-color: red; */
 }
@@ -234,7 +299,7 @@ export default {
   font-family: Helvetica;
   font-weight: normal;
   text-decoration: underline;
-  font-size: 150%;
+  /* font-size: 150%; */
 }
 
 .tagsContainer {
