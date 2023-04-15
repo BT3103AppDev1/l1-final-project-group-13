@@ -48,7 +48,7 @@
         </div>
       </div>
       <div id="commentsContainer">
-        <Comment />
+        <component v-bind:is="component" v-bind:resume_id ='resumeID' :key="componentKey" @rerender="forceRerender()" ></component>
       </div>
     </div>
   </div>
@@ -89,12 +89,14 @@ export default {
       pdfSource: null,
       resumeButtons: [],
       resumeID: null,
+      component: null,
+      componentKey: 0,
     };
   },
 
   components: {
     VuePdfEmbed,
-    Comment,
+    "comment": Comment,
     CommentDisplay,
     Login,
     SidebarRouter,
@@ -124,6 +126,7 @@ export default {
         .then((url) => {
           this.pdfSource = url;
           this.resumeID = documentRef.name;
+          this.component = 'comment';
           console.log('ResumeID = ', this.resumeID);
         })
         .catch((error) => {
@@ -133,6 +136,10 @@ export default {
     upload() {
       this.$router.push('/uploadResumes');
     },
+
+    forceRerender() {
+      this.componentKey += 1;
+    }
   },
 };
 </script>

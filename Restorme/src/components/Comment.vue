@@ -54,7 +54,7 @@
           </div>
         </li>
       </ul>
-       <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id'></component>
+       <component v-if="value.comment_id == this.comment_id" v-bind:is="component" @remove="cancelComment()" v-bind:comment_id='value.comment_id' v-bind:resume_id = resume_id :key = 'componentKey' @rerender="forceRerender()"></component>
       </li>
       </ul>
 
@@ -85,7 +85,7 @@
         <br /><br />
 
         <div class="save">
-          <button id="saveButton" type="button" v-on:click="saveCommentToFS(12345678)">
+          <button id="saveButton" type="button" v-on:click="saveCommentToFS(resume_id)">
             Save
           </button>
         </div>
@@ -103,11 +103,12 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import ReplyInput from "./ReplyInput.vue";
 
-const comments_collection = collection(db, "Comments");
-console.log(comments_collection)
+// const comments_collection = collection(db, "Comments");
+// console.log(comments_collection)
 
 
 export default {
+  props: ['resume_id', 'key'],
   components: {
     "reply-input": ReplyInput
   },
@@ -136,19 +137,19 @@ export default {
         'Experience': 'business_center',
         'Projects': 'integration_instructions',
         'Skills': 'auto_awesome'
-      }
+      },
+      componentKey: 0
     }
   },
 
   methods: {
 
     async getCommentsData() {
-      let commentsDataDocRef = collection(db, 'Comments');
+      let commentsDataDocRef = collection(db, "ResumeInfo", this.resume_id, "Comments");
       let snapshot = await getDocs(commentsDataDocRef);
       this.values = await Promise.all(
         snapshot.docs.map(async (doc) => {
           let documentData = doc.data();
-          console.log(documentData);
           let comment_id = documentData['Comment_ID']
           let description = documentData['Description'];
           // console.log(name);
@@ -157,7 +158,7 @@ export default {
           let upvotes = documentData['Number_Of_Upvotes'];
           let downvotes = documentData['Number_of_Downvotes'];
           let category = documentData['Comment_Category']
-          let repliesDataDocRef =  collection(db, 'Comments', comment_id, 'Reply_Collection');
+          let repliesDataDocRef =  collection(db, `ResumeInfo/${this.resume_id}/Comments/${comment_id}/Replies`);
           let snapshot_replies = await getDocs(repliesDataDocRef);
           console.log(snapshot_replies);
           var replies = []
@@ -187,8 +188,8 @@ export default {
       );
     },
 
-    async saveCommentToFS(resumeID) {
-      const commentCollection = collection(db, "Comment_Collection")
+    async saveCommentToFS(resume_id) {
+      // const commentCollection = collection(db, "Comment_Collection")
       const user = auth.currentUser;
       const userUID = auth.currentUser.uid;
       console.log("IN AC")
@@ -206,8 +207,8 @@ export default {
        * MARKED USEFUL / 
        * REPLIES - TBC
        */
-      let resume_id = resumeID;
-      let comment = document.getElementById("Description").value;
+      let resume_ID = resume_id;
+      let comment = document.getElementById("descriptionBox").value;
       let category = document.getElementById("category");
       let categoryValue = category.value
       let categoryText = category.options[category.selectedIndex].text;
@@ -231,14 +232,14 @@ export default {
         userUID + upvotesNum + downvotesNum + markedUseful + replies)
 
       try {
-        const docRef = await addDoc(collection(db, "Comments"), {
-          Comment_ID: "", Resume_ID: resume_id, Comment_Category: categoryText, User: userUID, Upload_Date: dateTime,
+        const docRef = await addDoc(collection(db, "ResumeInfo", resume_ID, "Comments"), {
+          Comment_ID: "", Resume_ID: resume_ID, Comment_Category: categoryText, User: userUID, Upload_Date: dateTime,
           Description: comment, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
           Marked_Useful: markedUseful, Replies: replies
         })
 
         console.log(String(docRef.id))
-        const commentsRef = doc(db, "Comments", String(docRef.id))
+        const commentsRef = doc(db, "ResumeInfo", resume_ID, "Comments", String(docRef.id))
         await updateDoc(commentsRef, {
           Comment_ID: String(docRef.id)
         })
@@ -248,6 +249,7 @@ export default {
       catch (error) {
         console.error("Error adding document: ", error);
       }
+      this.$emit('rerender');
 
     },
 
@@ -268,7 +270,13 @@ export default {
         }
       })
       return categorized;
+    },
+
+    forceRerender() {
+      this.componentKey += 1;
     }
+
+   
 
     
 
@@ -371,7 +379,7 @@ select {
   height: 150px;
   width: 350px;
   padding-right: 10%;
-  position:relative; left:-80px;
+  position:relative; left:-50px;
 }
 
 #votesContainer {
