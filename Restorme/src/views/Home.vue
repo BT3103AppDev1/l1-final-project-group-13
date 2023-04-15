@@ -1,10 +1,25 @@
 <template>
-  <div v-if="numOfResumesUploaded">
+  <div>
     <div id="homeContainer">
       <div id="routerContainer">
         <SidebarRouter />
       </div>
-      <div id="resumeContainer">
+      <div id="resumeContainer" v-if="numOfResumesUploaded === 0">
+        <div id="listOfResumesZeroResumeContainer">
+          <br />
+          <h3>
+            You have not uploaded any resumes yet. Upload your first resume to
+            receive feedback now!
+          </h3>
+          <br />
+          <div id="uploadResumeButtonZeroResumeContainer">
+            <button @click="upload" id="uploadResumeButtonZeroResume">
+              Upload Resumes
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="resumeContainer" v-if="numOfResumesUploaded > 0">
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
             <div id="resumeHeader">
@@ -70,7 +85,7 @@ export default {
   data() {
     return {
       user: false,
-      numOfResumesUploaded: 2,
+      numOfResumesUploaded: 0,
       email: '',
       pdfSource: null,
       resumeButtons: [],
@@ -98,6 +113,7 @@ export default {
       this.resumeButtons = await Promise.all(
         docList.items.map(async (documentRef) => {
           let name = documentRef.name;
+          this.numOfResumesUploaded += 1;
           return { name, documentRef };
         })
       );
@@ -149,6 +165,27 @@ export default {
   flex-direction: column;
 }
 
+#uploadResumeButtonZeroResume {
+  border-radius: 15;
+  padding: 10px;
+}
+
+h3 {
+  font-family: 'Rubik-Regular';
+  font-size: 18px;
+  color: #000000;
+}
+
+@font-face {
+  font-family: 'Rubik-Regular';
+  src: local('Rubik-Regular');
+}
+
+@font-face {
+  font-family: 'Rubik-Medium';
+  src: local('Rubik-Medium');
+}
+
 #listOfResumesContainer {
   flex: 1;
   /* background-color: rgb(255, 0, 212); */
@@ -156,6 +193,16 @@ export default {
   display: flex;
   flex-direction: column;
   height: 150px;
+}
+
+#listOfResumesZeroResumeContainer {
+  flex: 1;
+  /* background-color: rgb(255, 0, 212); */
+  vertical-align: top;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  padding: 20px;
 }
 
 #resumeHeaderContainer {
@@ -179,6 +226,15 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-right: 20px;
+}
+
+#uploadResumeButtonZeroResumeContainer {
+  flex: 1;
+  /* background-color: rgb(0, 255, 0); */
+  display: flex;
+  justify-content: center;
+  align-items: start;
   margin-right: 20px;
 }
 
