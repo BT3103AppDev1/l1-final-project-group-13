@@ -12,15 +12,9 @@
               <br /><br />
             </div>
             <div id="uploadResumeButtonContainer">
-              <input type="file" ref="myfile" /> <br /><br />
-              <input
-                type="text"
-                placeholder="Enter job title here..."
-                id="myInput"
-              />
               <br /><br />
 
-              <button @click="upload" id="uploadResumeButton">
+              <button @click="goToUpload" id="uploadResumeButton">
                 Upload Resume (.pdf)
               </button>
             </div>
@@ -36,7 +30,7 @@
           </div>
         </div>
         <div id="pdfContainer">
-          <vue-pdf-embed :source="pdfSource" ref="pdfEmbed"/>
+          <vue-pdf-embed v-bind:source="pdfSource" ref="pdfEmbed"/>
         </div>
       </div>
       <div id="commentsContainer">
@@ -75,6 +69,10 @@ export default {
   },
 
   setup() {
+    const pdfEmbed = ref2(null)
+    const pdfUrl = ref2('')
+
+
     const resumeButtons = ref2([]);
 
     const requiredURL = {value: null};
@@ -97,7 +95,7 @@ export default {
       });
     }
 
-    async function downloadDoc(documentRef) {
+    function downloadDoc(documentRef) {
       const requiredRef = ref(storage, documentRef.fullPath);
 
       const url = getDownloadURL(requiredRef)
@@ -112,9 +110,6 @@ export default {
           this.pdfSource = requiredURL.value;
           console.log("the pdf source is now " + this.pdfSource);
 
-        })
-        .catch((error) => {
-          console.error('error getting url:', error);
         });
 
       //this.pdfSource = url;
@@ -144,21 +139,10 @@ export default {
   },
 
   methods: {
-    upload: function () {
-      const folder = String(this.email);
-      var jobTitle = document.getElementById('myInput').value;
 
-      const final_path = folder + '/' + String(jobTitle);
-      const storageRef = ref(storage, final_path);
-
-      alert('Confirm that you are uploading the resume for: ' + jobTitle);
-      uploadBytes(storageRef, this.$refs.myfile.files[0]).then((snapshot) => {
-        console.log('uploaded!');
-        //window.location.reload();
-      });
-
-      document.getElementById('myInput').value = '';
-    },
+    goToUpload: function () {
+      this.$router.push('/uploadResumes')
+    }
   },
 };
 </script>

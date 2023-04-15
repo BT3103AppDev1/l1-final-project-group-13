@@ -67,7 +67,9 @@
             <input type="file" ref="pdfFile" accept="application/pdf" />
           </div>
           <div id="submitContainer">
-            <button type="button" id="savebutton" v-on:click="save">Submit</button>
+            <button type="button" id="savebutton" v-on:click="save">
+              Submit
+            </button>
           </div>
         </form>
       </div>
@@ -78,7 +80,10 @@
 <script>
 // import { dummy_data } from "../data/ResumeData";
 import { db, storage } from "../firebase.js";
-import { writeBatch, doc, collection, addDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import "firebase/storage";
@@ -90,6 +95,7 @@ export default {
     return {
       user: false,
       email: "",
+      user_id: "",
     };
   },
 
@@ -122,7 +128,7 @@ export default {
       const uniqueId = this.generateRandomId();
 
       // handle the pdf
-      const refToUserEmail = 'gs://restorme-cf3da.appspot.com/' + this.email;
+      const refToUserEmail = "gs://restorme-cf3da.appspot.com/" + this.email;
       console.log(refToUserEmail);
 
       const path = String(this.email) + "/" + String(uniqueId);
@@ -139,9 +145,25 @@ export default {
       let location = document.getElementById("location1").value;
       let experience = document.getElementById("experience1").value;
       let additionalInfo = document.getElementById("additionalinfo1").value;
+      let currentdate = new Date();
+      let dateTime =
+        currentdate.getDate() +
+        "/" +
+        (currentdate.getMonth() + 1) +
+        "/" +
+        currentdate.getFullYear() +
+        " @ " +
+        currentdate.getHours() +
+        ":" +
+        currentdate.getMinutes() +
+        ":" +
+        currentdate.getSeconds();
 
-      alert(" Saving your data for this resume with this ID: " + uniqueId );
-      
+      const user_email = String(this.email);
+      console.log(user_email);
+
+      alert(" Saving your data for this resume with this ID: " + uniqueId);
+
       try {
         const docRef = await setDoc(doc(db, "ResumeInfo", uniqueId), {
           Title: title,
@@ -150,17 +172,14 @@ export default {
           Experience: experience,
           Additional_Info: additionalInfo,
           Resume_Id: uniqueId,
+          Date: dateTime,
+          Email: this.email,
         });
-        console.log(docRef);
         document.getElementById("resume_form").reset();
         this.$emit("added");
       } catch (error) {
         console.error("Error adding document: ", error);
       }
-
-      
-
-
 
       document.getElementById("savebutton").disabled = false;
     },
