@@ -9,7 +9,7 @@
         </div>
         <div id="commentDetailsContainer">
           <textarea id="replyDescription" rows="3" cols="35" placeholder="Enter your comment" required></textarea>
-          <button id="saveReplyButton" v-on:click="saveReplyToFS(comment_id)">Save</button>
+          <button id="saveReplyButton" v-on:click="saveReplyToFS(resume_id, comment_id)">Save</button>
         </div>
 
       </div>
@@ -25,7 +25,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export default {
   name: 'ReplyInput',
-  props: ['comment_id', 'resume_id'],
+  props: ['comment_id', 'resume_id', 'componentKey'],
   
   mounted() {
     const auth = getAuth();
@@ -48,7 +48,7 @@ export default {
     //   return reply_description;
     // }
 
-    async saveReplyToFS(comment_id) {
+    async saveReplyToFS(resume_id, comment_id) {
 
       //const commentDocument = doc(db, "Comments", comment_id);
       console.log(comment_id);
@@ -67,14 +67,14 @@ export default {
       let user = this.user.email
 
       try {
-        const docRef = await addDoc(collection(db, "Comments", comment_id, "Reply_Collection"), {
+        const docRef = await addDoc(collection(db, `/ResumeInfo/${resume_id}/Comments/${comment_id}/Replies`), {
           Reply_ID: "", Comment_ID: comment_id, Upload_Date: dateTime,
           Description: reply_description, Number_Of_Upvotes: upvotesNum, Number_of_Downvotes: downvotesNum,
           Marked_Useful: markedUseful, User: user
         })
 
         console.log(String(docRef.id))
-        const replyRef = doc(db, "Comments", comment_id, "Reply_Collection", String(docRef.id))
+        const replyRef = doc(db, "ResumeInfo", resume_ID, "Comments", comment_id, "Reply_Collection", String(docRef.id))
         await updateDoc(replyRef, {
           Reply_ID: String(docRef.id)
         })
@@ -84,6 +84,7 @@ export default {
       catch (error) {
         console.error("Error adding document: ", error);
       }
+      this.$emit('rerender')
     }
   }
 
@@ -141,17 +142,22 @@ export default {
   width: 90%;
   margin-left: 5%;
   margin-top: 5%;
+  font-family:'Times New Roman', Times, serif;
 }
 
 #saveReplyButton {
-  width: 15%;
   font-size: 80%;
   height: 20%;
-  margin-left: 5%;
+  margin-left: 74%;
   margin-top: 1%;
   background-color: orange;
   border-color: orange;
   color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 #saveReplyButton:hover {
