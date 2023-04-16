@@ -131,7 +131,8 @@ export default {
         })
         .catch((error) => {
           console.error('error getting url:', error);
-        });
+        })
+        .then(this.forceRerender())
     },
     upload() {
       this.$router.push('/uploadResumes');
