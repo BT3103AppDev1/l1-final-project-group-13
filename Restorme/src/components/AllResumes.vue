@@ -214,8 +214,8 @@ export default {
           let role = documentData['Role'];
           let location = documentData['Location'];
           let experience = documentData['Experience'];
-          let date = documentData['Date'].toDate().toDateString();
-          let resume_id = documentData['ResumeID'];
+          let date = documentData['Date'];
+          let resume_id = documentData['Resume_Id'];
           let user_id = documentData['UserID'];
           let email = documentData['Email'];
 
