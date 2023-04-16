@@ -128,11 +128,11 @@ export default {
           this.resumeID = documentRef.name;
           this.component = 'comment';
           console.log('ResumeID = ', this.resumeID);
+          this.forceRerender();
         })
         .catch((error) => {
           console.error('error getting url:', error);
         })
-        .then(this.forceRerender())
     },
     upload() {
       this.$router.push('/uploadResumes');
