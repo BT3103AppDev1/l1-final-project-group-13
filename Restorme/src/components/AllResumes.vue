@@ -145,7 +145,14 @@
         <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
       </div>
     </div>
-    <div id="commentsContainer">Comments</div>
+    <div id="commentsContainer">
+      <component
+        v-bind:is="component"
+        v-bind:resume_id="resume_id"
+        :key="componentKey"
+        @rerender="forceRerender()"
+      ></component>
+    </div>
   </div>
 </template>
 
@@ -162,13 +169,15 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import { storage } from '../firebase';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
-import Comment from './Comment.vue';
+import Comment from '../components/Comment.vue';
+import CommentDisplay from '../components/CommentDisplay.vue';
 
 export default {
   name: 'AllResumes',
   components: {
     VuePdfEmbed,
-    Comment,
+    comment: Comment,
+    CommentDisplay,
   },
   data() {
     return {
@@ -183,6 +192,8 @@ export default {
       allResumesButtonActive: true,
       starredResumesButtonActive: false,
       starredResumesValues: [],
+      component: null,
+      componentKey: 0,
     };
   },
   mounted() {
@@ -325,6 +336,8 @@ export default {
       this.downloadDoc(this.resumeUserEmail, this.resume_id);
       // this.$emit('resumeClicked', resume_id);
       // this.$router.push('/resumeCommentDisplay');
+      this.component = 'comment';
+      this.forceRerender();
     },
     async downloadDoc(userEmail, resumeID) {
       const requiredRef = ref(
@@ -340,6 +353,9 @@ export default {
         .catch((error) => {
           console.error('error getting url:', error);
         });
+    },
+    forceRerender() {
+      this.componentKey += 1;
     },
   },
 };
@@ -509,12 +525,14 @@ export default {
 }
 
 #commentsContainer {
-  flex: 1;
-  background-color: rgb(92, 190, 255);
+  flex: 0.7;
+  /* background-color: rgb(0, 242, 255); */
   align-self: center;
   height: 95vh;
-  margin-top: 60px;
-  display: flex;
+  margin-top: 80px;
+  padding: 20px;
+  justify-content: center;
+  overflow-y: scroll;
 }
 
 .active {
