@@ -101,7 +101,7 @@ export default {
     Login,
     SidebarRouter,
     Profile,
-  },
+},
 
   methods: {
     async loadDocs(userEmail) {
