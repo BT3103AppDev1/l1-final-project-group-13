@@ -1,23 +1,60 @@
 <template>
   <div class="container" v-if="resume_id === null">
     <div class="topFilterBar">
-      <button class="filterButtons">All Resumes</button>
-      <button class="filterButtons">Starred Resumes</button>
+      <button
+        class="filterButtons"
+        v-on:click="changeToAllResumeView"
+        :class="allResumesButtonActive ? 'active' : 'inactive'"
+      >
+        All Resumes
+      </button>
+      <button
+        class="filterButtons"
+        v-on:click="changeToStarredResumeView"
+        :class="starredResumesButtonActive ? 'active' : 'inactive'"
+      >
+        Starred Resumes
+      </button>
     </div>
-    <div class="overflow-scroll" id="resumeListContainer">
+    <div
+      class="overflow-scroll"
+      id="resumeListContainer"
+      v-if="this.showStarredResumes === false"
+    >
       <br />
       <ul class="resumeList">
         <li v-for="value in values" :key="value.resume_id">
           <div class="resumeContainer">
             <div class="resumeContainer2">
               <div class="topContainer">
-                <div id="starContainer">star</div>
+                <div id="starContainer">
+                  <div
+                    id="emptyStarContainer"
+                    v-if="value.userHasStarredThisResume === false"
+                  >
+                    <button
+                      v-on:click="addToUserStarredResumes(value.resume_id)"
+                    >
+                      <img src="../assets/empty star.png" id="star" />
+                    </button>
+                  </div>
+                  <div
+                    id="filledStarContainer"
+                    v-if="value.userHasStarredThisResume === true"
+                  >
+                    <button
+                      v-on:click="removeFromUserStarredResumes(value.resume_id)"
+                    >
+                      <img src="../assets/yellow star.png" id="star" />
+                    </button>
+                  </div>
+                </div>
                 <div id="titleContainer">
                   <button
                     id="resumeLink"
                     @click="showResume(value.resume_id, value.email)"
                   >
-                    <h2 id="title">{{ value.title }}</h2>
+                    {{ value.title }}
                   </button>
                 </div>
                 <div class="uploadDetails">
@@ -39,6 +76,63 @@
         </li>
       </ul>
     </div>
+    <div
+      class="overflow-scroll"
+      id="resumeListContainer"
+      v-if="this.showStarredResumes === true"
+    >
+      <br />
+      <ul class="resumeList">
+        <div v-if="this.numberOfStarredResumes === 0">
+          Star a resume to bookmark it for later!
+        </div>
+        <div v-if="this.numberOfStarredResumes > 0">
+          <li v-for="value in starredResumesValues" :key="value.resume_id">
+            <div
+              class="resumeContainer"
+              v-if="value.userHasStarredThisResume === true"
+            >
+              <div class="resumeContainer2">
+                <div class="topContainer">
+                  <div id="starContainer">
+                    <div id="filledStarContainer">
+                      <button
+                        v-on:click="
+                          removeFromUserStarredResumes(value.resume_id)
+                        "
+                      >
+                        <img src="../assets/yellow star.png" id="star" />
+                      </button>
+                    </div>
+                  </div>
+                  <div id="titleContainer">
+                    <button
+                      id="resumeLink"
+                      @click="showResume(value.resume_id, value.email)"
+                    >
+                      {{ value.title }}
+                    </button>
+                  </div>
+                  <div class="uploadDetails">
+                    Uploaded by {{ value.email }} on {{ value.date }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="tagsContainer">
+                <div class="tags" id="experience">
+                  {{ value.experience }} Years of Experience
+                </div>
+                <div class="tags" id="role">{{ value.role }}</div>
+                <div class="tags" id="location">{{ value.location }}</div>
+              </div>
+            </div>
+            <br />
+            <br />
+          </li>
+        </div>
+      </ul>
+    </div>
   </div>
   <div class="resumeChosenContainer" v-if="resume_id != null">
     <div id="pdfContainer">
@@ -57,18 +151,24 @@
 
 <script>
 import { db } from '../firebase.js';
-import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import {
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import { storage } from '../firebase';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
+import Comment from './Comment.vue';
 
 export default {
   name: 'AllResumes',
   components: {
-    PerfectScrollbar,
     VuePdfEmbed,
+    Comment,
   },
   data() {
     return {
@@ -78,6 +178,11 @@ export default {
       resume_id: null,
       pdfSource: null,
       resumeUserEmail: null,
+      showStarredResumes: false,
+      numberOfStarredResumes: 0,
+      allResumesButtonActive: true,
+      starredResumesButtonActive: false,
+      starredResumesValues: [],
     };
   },
   mounted() {
@@ -87,17 +192,20 @@ export default {
         this.user = user;
         this.getdummyData();
         this.userID = user.uid;
+        this.email = user.email;
         // console.log(this.userID);
       }
     });
   },
   methods: {
     async getdummyData() {
-      let dummyDataDocRef = collection(db, 'ResumeTestData');
+      this.numberOfStarredResumes = 0;
+      this.starredResumesValues = [];
+      let dummyDataDocRef = collection(db, 'ResumeInfo');
       let snapshot = await getDocs(dummyDataDocRef);
       this.values = await Promise.all(
-        snapshot.docs.map(async (doc) => {
-          let documentData = doc.data();
+        snapshot.docs.map(async (document) => {
+          let documentData = document.data();
           // console.log(documentData);
           let additionalInfo = documentData['Additional Info'];
           // console.log(name);
@@ -110,6 +218,24 @@ export default {
           let resume_id = documentData['ResumeID'];
           let user_id = documentData['UserID'];
           let email = documentData['Email'];
+
+          //need to check if the user has starred this resume via value.userStarredResume
+          let userHasStarredThisResume = null;
+          let userStarredResumesRef = doc(db, 'users', this.email);
+          let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+            (doc) => {
+              console.log('Document data:', doc);
+              let userInfo = doc.data();
+              console.log('UserInfo: ', userInfo);
+              let userStarredResumes = userInfo['StarredResumes'];
+              console.log('userStarredResumes: ', userStarredResumes);
+              userHasStarredThisResume = userStarredResumes.includes(resume_id);
+              if (userHasStarredThisResume === true) {
+                this.numberOfStarredResumes++;
+              }
+            }
+          );
+
           return {
             additionalInfo,
             title,
@@ -120,9 +246,76 @@ export default {
             resume_id,
             user_id,
             email,
+            userHasStarredThisResume,
           };
         })
       );
+      for (let i = 0; i < this.values.length; i++) {
+        if (this.values[i].userHasStarredThisResume === true) {
+          this.starredResumesValues.push(this.values[i]);
+        }
+      }
+    },
+    changeToAllResumeView() {
+      this.showStarredResumes = false;
+      this.allResumesButtonActive = true;
+      this.starredResumesButtonActive = false;
+    },
+    changeToStarredResumeView() {
+      this.showStarredResumes = true;
+      this.allResumesButtonActive = false;
+      this.starredResumesButtonActive = true;
+    },
+    async addToUserStarredResumes(resumeID) {
+      // for adding to user's starred history
+
+      let userStarredResumesRef = doc(db, 'users', this.email);
+      var userStarredResumesArray = [];
+      let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+        (doc) => {
+          let userInfo = doc.data();
+          userStarredResumesArray = userInfo['StarredResumes'];
+        }
+      );
+
+      if (userStarredResumesArray.includes(resumeID)) {
+        console.log('user has already starred this resume');
+        this.getdummyData();
+        this.values = this.values;
+        this.numberOfStarredResumes = this.numberOfStarredResumes;
+        return;
+      }
+
+      userStarredResumesArray.push(resumeID);
+      let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
+        StarredResumes: userStarredResumesArray,
+      });
+      console.log('added to user starred history');
+      this.getdummyData();
+      this.values = this.values;
+      this.numberOfStarredResumes = this.numberOfStarredResumes;
+    },
+    async removeFromUserStarredResumes(resumeID) {
+      // for removing from user's starred history
+      let userStarredResumesRef = doc(db, 'users', this.email);
+      var userStarredResumesArray = [];
+      let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
+        (doc) => {
+          let userInfo = doc.data();
+          userStarredResumesArray = userInfo['StarredResumes'];
+        }
+      );
+
+      userStarredResumesArray = userStarredResumesArray.filter(
+        (item) => item !== resumeID
+      );
+      let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
+        StarredResumes: userStarredResumesArray,
+      });
+      console.log('removed from user starred history');
+      this.getdummyData();
+      this.values = this.values;
+      this.numberOfStarredResumes = this.numberOfStarredResumes;
     },
     showResume(resume_id, email) {
       console.log('resumeid = ', resume_id);
@@ -136,7 +329,7 @@ export default {
     async downloadDoc(userEmail, resumeID) {
       const requiredRef = ref(
         storage,
-        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID + '.pdf'
+        'gs://restorme-cf3da.appspot.com/' + userEmail + '/' + resumeID
       );
 
       const url = getDownloadURL(requiredRef)
@@ -187,6 +380,7 @@ export default {
 #resumeListContainer {
   height: 90vh;
   overflow-y: scroll;
+  align-items: top;
 }
 
 .resumeList {
@@ -205,20 +399,40 @@ export default {
 .topContainer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   width: 100%;
+}
+
+#starContainer {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  /* background-color: blue; */
+}
+
+#star {
+  width: 20px;
+  height: 20px;
+  margin-left: 5%;
+  margin-top: 10%;
+}
+
+#resumeLink {
+  padding: 10px;
 }
 
 #titleContainer {
   margin-left: 5%;
-  display: flex;
+  /* display: flex; */
+  flex: 5;
+  /* background-color: red; */
 }
 
 #title {
   font-family: Helvetica;
   font-weight: normal;
   text-decoration: underline;
-  font-size: 150%;
+  /* font-size: 150%; */
 }
 
 .tagsContainer {
@@ -301,5 +515,9 @@ export default {
   height: 95vh;
   margin-top: 60px;
   display: flex;
+}
+
+.active {
+  background-color: rgb(250, 239, 139);
 }
 </style>
