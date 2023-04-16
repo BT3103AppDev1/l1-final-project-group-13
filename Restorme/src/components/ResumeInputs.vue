@@ -2,7 +2,7 @@
   <div class="container">
     <div class="resumeContainer">
       <div class="headerContainer">
-        <h2 class="uploadHeader">Upload Your First Resume Here!</h2>
+        <h2 class="uploadHeader">Upload Your Resume Here!</h2>
       </div>
       <div class="resumeDetails">
         <form id="resume_form">
@@ -67,7 +67,7 @@
             <input type="file" ref="pdfFile" accept="application/pdf" />
           </div>
           <div id="submitContainer">
-            <button type="button" id="savebutton" v-on:click="save">
+            <button type="button" id="submitButton" v-on:click="save">
               Submit
             </button>
           </div>
@@ -213,7 +213,10 @@ export default {
 
 .uploadHeader {
   text-align: center;
-  padding-top: 5%;
+  color: black;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 25px;
+  font-weight: bold;
 }
 
 #backgroundImage {
@@ -250,7 +253,7 @@ form {
 }
 
 .pdfDropBox {
-  background-color: lavender;
+  background-color:  #c8d8e4;;
   width: 100%;
   text-align: center;
   border-radius: 0.5%;
@@ -278,20 +281,24 @@ form {
   font-size: small;
 }
 
-.submitButton {
-  background-color: orange;
-  border-color: orange;
+#submitButton {
   color: white;
   margin-top: 1%;
   padding-top: 1%;
   padding-bottom: 1%;
   padding-left: 5%;
   padding-right: 5%;
+  background-color:#52ab98;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.submitButton:hover {
-  background-color: darkorange;
-  border-color: darkorange;
+
+#submitButton:hover {
+  background-color:  #3f7d70;;
 }
 
 #submitContainer {

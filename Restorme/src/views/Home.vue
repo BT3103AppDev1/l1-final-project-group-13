@@ -23,7 +23,7 @@
         <div id="listOfResumesContainer">
           <div id="resumeHeaderContainer">
             <div id="resumeHeader">
-              <h3>Your Resumes</h3>
+              Your Resumes
               <br /><br />
             </div>
             <div id="uploadResumeButtonContainer">
@@ -178,10 +178,11 @@ export default {
 }
 
 h3 {
-  font-family: 'Rubik-Regular';
+  font-family: 'Rubik-Medium';
   font-size: 18px;
   color: #000000;
 }
+
 
 @font-face {
   font-family: 'Rubik-Regular';
@@ -216,15 +217,31 @@ h3 {
   flex: 0.2;
   /* background-color: rgb(255, 0, 0); */
   display: flex;
+  margin-top: 
 }
 
 #resumeHeader {
-  flex: 1;
-  /* background-color: rgb(0, 255, 0); */
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-left: 20px;
+  padding-top: 5%;
+  padding-left: 5%;
+  /* margin-bottom: 20px; */
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  background-image: url('header-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color:#2b6777;
+  text-shadow: 1px 1px #f2f2f2;
+  animation: fade-in 1s;
+}
+
+@keyframes fade-in {
+from { opacity: 0; }
+to { opacity: 1; }
 }
 
 #uploadResumeButtonContainer {
@@ -240,8 +257,7 @@ h3 {
   font-size: 80%;
   height: 30px;
   width: 200px;
-  background-color: orange;
-  border-color: orange;
+  background-color: #52ab98;
   color: white;
   border: none;
   border-radius: 5px;
@@ -250,7 +266,7 @@ h3 {
 }
 
 #uploadResumeButton:hover {
-  background-color: darkorange;
+  background-color: #3f7d70;
 }
 
 #uploadResumeButtonZeroResumeContainer {
@@ -270,7 +286,21 @@ h3 {
 }
 
 #buttonsContainer {
+  font-size: 80%;
+  height: 30px;
+  width: 200px;
   margin-bottom: 10px;
+  background-color: #c8d8e4;
+  color: #2b6777;
+  border: none;
+  border-radius: 5px;
+  font-size: 90%;
+  cursor: pointer;
+  animation: fade-in 1s;
+}
+
+#buttonsContainer:hover {
+  background-color: #a4b3bf;
 }
 
 #pdfContainer {
@@ -291,5 +321,15 @@ h3 {
   padding: 20px;
   justify-content: center;
   overflow-y: scroll;
+}
+
+@font-face {
+  font-family: 'Rubik-Regular';
+  src: local('Rubik-Regular');
+}
+
+@font-face {
+  font-family: 'Rubik-Medium';
+  src: local('Rubik-Medium');
 }
 </style>

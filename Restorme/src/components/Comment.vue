@@ -4,11 +4,11 @@
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   </head>
   <div id = "largeContainer" >
-    <h1 id="Current">Comments</h1>
+    <h1 id="commentHeader">Comments</h1>
     <ul style = "list-style-type: none;">
       <li v-for = "cat in categories" >
         <i class="material-symbols-outlined">{{ category_icons[cat] }}</i>
-          <span id="General">{{cat}}</span>
+          <span id="categoryDivider">{{cat}}</span>
       <ul style = "list-style-type: none;">
         <li v-for = "value in categorizeComment(values, cat)" key: value.comment_id>
       <div id="comment">
@@ -65,7 +65,7 @@
 
   <div class="container">
     <form id="myform">
-      <h2>Add Comments</h2>
+      <h2 id = "addCommentHeader">Add New Comment</h2>
 
       <div class="formli">
 
@@ -130,7 +130,7 @@ export default {
       comment_id: "",
       comment_user: "",
       values: [],
-      categories: ['General', 'Education', 'Experience', 'Projects'],
+      categories: ['General', 'Education', 'Experience', 'Projects', 'Skills'],
       category_icons: {
         'General': 'badge',
         'Education': 'school',
@@ -328,6 +328,24 @@ h2 {
   text-align: center;
 }
 
+#commentHeader {
+  width: 90%;
+  background-color: #c8d8e4;
+  color: #2b6777;
+  border-style: ridge;
+  border-color: #2b6777;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  animation: fade-in 1s;
+}
+
+#categoryDivider {
+  padding-bottom: 3%;
+  padding-top: 4%;
+  animation: fade-in 1s;
+}
+
 .formli {
   display: inline-block;
   text-align: left;
@@ -338,6 +356,7 @@ form {
   align-items: center;
   margin: auto;
   height: 50%;
+  animation: fade-in 1s;
 }
 
 input:hover {
@@ -366,6 +385,19 @@ select {
   font-family:'Times New Roman', Times, serif;
 }
 
+#addCommentHeader {
+  margin-top: 30%;
+  width: 90%;
+  background-color: #c8d8e4;
+  color: #2b6777;
+  border-style: ridge;
+  border-color: #2b6777;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+}
+
 #largeContainer {
   height: 800px;
   overflow-y: scroll;
@@ -380,6 +412,7 @@ select {
   width: 350px;
   padding-right: 10%;
   position:relative; left:-50px;
+  animation: fade-in 1s;
 }
 
 #votesContainer {
@@ -389,7 +422,7 @@ select {
   align-items: center;
   font-family: Rubik-Medium;
   flex-direction: column;
-  background-color: #f5f6fa;
+  background-color:#f2f2f2;
   border-radius: 50px;
   margin: 5%;
   width: 40px;
@@ -402,7 +435,7 @@ select {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  color: #c5c6ef;
+  color:#2b6777;
 }
 
 .voteCount {
@@ -411,7 +444,7 @@ select {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #5357b6;
+  color: #2b6777;
 }
 
 #commentContentsContainer{
@@ -449,7 +482,7 @@ select {
 #commentDetailsContainer {
   /* background-color: rgb(255, 0, 255); */
   color: grey;
-  font-family: Rubik-Regular;
+  font-family: 'Montserrat', sans-serif;
   font-weight: medium;
 
 }
@@ -458,6 +491,7 @@ select {
   font-style: italic;
   margin-left: 3%;
   font-size: 80%;
+  padding-top: 0%;
 }
 
 #replyButton {
@@ -466,7 +500,7 @@ select {
 }
 
 #replyButton:hover {
-  background-color: lavender;
+  background-color: #f2f2f2;
 }
 
 #reply {
@@ -474,9 +508,10 @@ select {
   /* background-color: grey; */
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  height: 150px;
+  height: 120px;
   width: 350px;
   position:relative; left:-60px;
+  animation: fade-in 1s;
 }
 
 #replyVotesContainer {
@@ -486,7 +521,7 @@ select {
   align-items: center;
   font-family: Rubik-Medium;
   flex-direction: column;
-  background-color: #f5f6fa;
+  background-color: #f2f2f2;
   border-radius: 50px;
   margin: 5%;
   width: 10%;
@@ -524,7 +559,8 @@ select {
   font-style: italic;
   margin-left: 3%;
   font-size: 80%;
-  margin-top: 5%;
+  position: relative;
+  padding-top: 10%;
 }
 
 .material-symbols-outlined {
@@ -538,7 +574,7 @@ select {
 .material-symbols-outlined ~ span {display:inline-block}
 
 #saveButton {
-  background-color: orange;
+  background-color:#52ab98;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -549,7 +585,7 @@ select {
 }
 
 #saveButton:hover {
-  background-color: darkorange;
+  background-color:  #3f7d70;;
 }
 
 </style>

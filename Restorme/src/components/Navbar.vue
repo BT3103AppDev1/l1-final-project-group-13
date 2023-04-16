@@ -89,7 +89,21 @@ export default {
   font-size: 18px;
   font-weight: bold;
   margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-image: url('header-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color:black;
+  /* text-shadow: 1px 1px #285662; */
+  animation: fade-in 1s;
 }
+
+@keyframes fade-in {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
 
 .signOutContainer {
   flex: 1;

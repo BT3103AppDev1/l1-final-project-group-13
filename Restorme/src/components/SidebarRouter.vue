@@ -56,9 +56,10 @@ export default {
 <style>
 .v-sidebar-menu.vsm_expanded {
   padding: 20px;
-  /* background-color: aqua; */
+  background-color: #f2f2f2;
   margin-top: 8px;
   border-right: 2px solid #c8c8c8;
   margin-right: 10px;
+  font-family: 'Montserrat', sans-serif;
 }
 </style>
