@@ -67,6 +67,7 @@ const register = async () => {
           Biography: null,
           Experience: null,
           SocialMediaLinks: null,
+          StarredResumes: [],
         });
         console.log('Document written with ID: ', docRef.id);
       } catch (e) {

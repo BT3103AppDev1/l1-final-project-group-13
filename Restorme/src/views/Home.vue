@@ -48,7 +48,12 @@
         </div>
       </div>
       <div id="commentsContainer">
-        <component v-bind:is="component" v-bind:resume_id ='resumeID' :key="componentKey" @rerender="forceRerender()" ></component>
+        <component
+          v-bind:is="component"
+          v-bind:resume_id="resumeID"
+          :key="componentKey"
+          @rerender="forceRerender()"
+        ></component>
       </div>
     </div>
   </div>
@@ -96,12 +101,12 @@ export default {
 
   components: {
     VuePdfEmbed,
-    "comment": Comment,
+    comment: Comment,
     CommentDisplay,
     Login,
     SidebarRouter,
     Profile,
-},
+  },
 
   methods: {
     async loadDocs(userEmail) {
@@ -132,7 +137,7 @@ export default {
         })
         .catch((error) => {
           console.error('error getting url:', error);
-        })
+        });
     },
     upload() {
       this.$router.push('/uploadResumes');
@@ -140,7 +145,7 @@ export default {
 
     forceRerender() {
       this.componentKey += 1;
-    }
+    },
   },
 };
 </script>
@@ -182,7 +187,6 @@ h3 {
   font-size: 18px;
   color: #000000;
 }
-
 
 @font-face {
   font-family: 'Rubik-Regular';
@@ -233,14 +237,18 @@ h3 {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color:#2b6777;
+  color: #2b6777;
   text-shadow: 1px 1px #f2f2f2;
   animation: fade-in 1s;
 }
 
 @keyframes fade-in {
-from { opacity: 0; }
-to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 #uploadResumeButtonContainer {
@@ -252,7 +260,7 @@ to { opacity: 1; }
   margin-right: 20px;
 }
 
-#uploadResumeButton{
+#uploadResumeButton {
   font-size: 80%;
   height: 30px;
   width: 200px;
