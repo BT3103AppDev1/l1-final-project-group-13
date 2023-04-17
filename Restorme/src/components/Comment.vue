@@ -102,10 +102,11 @@ import { addDoc, collection, doc, getDoc, updateDoc, getDocs } from "firebase/fi
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import ReplyInput from "./ReplyInput.vue";
+//import Profile from "@/views/Profile.vue";
 
 // const comments_collection = collection(db, "Comments");
 // console.log(comments_collection)
-
+//import OtherProfile from "../views/OtherProfile.vue"
 
 export default {
   props: ['resume_id', 'key'],
