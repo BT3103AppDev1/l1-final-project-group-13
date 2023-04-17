@@ -530,7 +530,7 @@ export default {
     forceRerender() {
       this.componentKey += 1;
       // this.$emit('rerender')
-      // this.getCommentsData()
+      this.getCommentsData()
     }
 
    
