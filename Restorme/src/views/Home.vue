@@ -38,7 +38,7 @@
                 id="buttonsContainer"
                 @click="downloadDoc(button.documentRef)"
               >
-                {{ button.name }}
+                {{ button.resumeTitle }}
               </button>
             </div>
           </div>
@@ -70,6 +70,15 @@ import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 import Login from '@/views/Login.vue';
 import SidebarRouter from '@/components/SidebarRouter.vue';
 import Profile from '@/views/Profile.vue';
+import {
+  addDoc,
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  getDoc,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default {
   name: 'Home',
@@ -120,7 +129,15 @@ export default {
         docList.items.map(async (documentRef) => {
           let name = documentRef.name;
           this.numOfResumesUploaded += 1;
-          return { name, documentRef };
+          const resumeDoc = doc(db, 'ResumeInfo', name);
+          let resumeTitle = '';
+          const getResumeTitle = await getDoc(resumeDoc).then((doc) => {
+            console.log('Document data:', doc);
+            let resumeInfo = doc.data();
+            console.log('ResumeInfo: ', resumeInfo);
+            resumeTitle = resumeInfo['Title'];
+          });
+          return { name, documentRef, resumeTitle };
         })
       );
     },
@@ -294,13 +311,14 @@ h3 {
 
 #buttonsContainer {
   font-size: 80%;
-  height: 30px;
-  width: 200px;
+  /* height: 30px;
+  width: 200px; */
   margin-bottom: 10px;
   background-color: #c8d8e4;
   color: #2b6777;
   border: none;
   border-radius: 5px;
+  padding: 5px;
   font-size: 90%;
   cursor: pointer;
   animation: fade-in 1s;

@@ -13,9 +13,9 @@
         <li v-for = "value in categorizeComment(values, cat)" key: value.comment_id>
       <div id="comment">
         <div id="votesContainer">
-          <div class="vote" v-on:click = "upvoteComment(resume_id, value.comment_id)">+</div>
+          <div class="vote" v-on:click = "upvoteComment(resume_id, value.comment_id, value.userHasUpvotedThisComment, value.userHasDownvotedThisComment)">+</div>
           <div class="voteCount">{{ value.upvotes - value.downvotes }}</div>
-          <div class="vote" v-on:click = "downvoteComment(resume_id, value.comment_id)" >-</div>
+          <div class="vote" v-on:click = "downvoteComment(resume_id, value.comment_id, value.userHasUpvotedThisComment, value.userHasDownvotedThisComment)" >-</div>
         </div>
         <div id = "commentContentsContainer">
           <div id="commentsTopHalfContent">
@@ -119,6 +119,7 @@ export default {
       if (user) {
         this.user = user;
         this.getCommentsData();
+        this.email = user.email;
       }
     });
   },
@@ -138,7 +139,8 @@ export default {
         'Projects': 'integration_instructions',
         'Skills': 'auto_awesome'
       },
-      componentKey: 0
+      componentKey: 0,
+      categorize : null
     }
   },
 
@@ -148,8 +150,8 @@ export default {
       let commentsDataDocRef = collection(db, "ResumeInfo", this.resume_id, "Comments");
       let snapshot = await getDocs(commentsDataDocRef);
       this.values = await Promise.all(
-        snapshot.docs.map(async (doc) => {
-          let documentData = doc.data();
+        snapshot.docs.map(async (docu) => {
+          let documentData = docu.data();
           let comment_id = documentData['Comment_ID']
           let description = documentData['Description'];
           // console.log(name);
@@ -174,6 +176,23 @@ export default {
             replies.push(reply)
           })
           console.log(replies)
+
+          let userHasUpvotedThisComment = null;
+          let userHasDownvotedThisComment = null;
+
+          let userHasVotedOnThisCommentRef = doc(db, 'users', this.email);
+          let getUserVotesOnThisComment = await getDoc(userHasVotedOnThisCommentRef).then(
+            (doc) => {
+              // console.log('Document data:', doc);
+              let userInfo = doc.data();
+              // console.log('UserInfo: ', userInfo);
+              let commentsUpvoted = userInfo['CommentsUserUpvoted'];
+              let commentsDownvoted = userInfo['CommentsUserDownvoted'];
+              // console.log('userStarredResumes: ', userStarredResumes);
+              userHasUpvotedThisComment = commentsUpvoted.includes(this.resume_id);
+              userHasDownvotedThisComment = commentsDownvoted.includes(this.resume_id);
+            })
+            
           return {
             comment_id,
             description,
@@ -182,7 +201,9 @@ export default {
             upvotes,
             downvotes,
             category,
-            replies
+            replies,
+            userHasUpvotedThisComment,
+            userHasDownvotedThisComment
           };
         })
       );
@@ -266,47 +287,222 @@ export default {
 
     },
 
-    async upvoteComment(resume_id, comment_id) {
+    async upvoteComment(resume_id, comment_id, userHasUpvotedThisComment, userHasDownvotedThisComment) {
       let commentsDocRef = doc(db, "ResumeInfo", resume_id, "Comments", comment_id);
       let commentDocSnap = await getDoc(commentsDocRef)
       let commentData = commentDocSnap.data()
-      let upvotes = commentData['Number_Of_Upvotes']
-      const newUpvote = {
-        Number_of_Upvotes: upvotes + 1,
-      };
-      updateDoc(commentsDocRef, newUpvote)
-      .then(commentsDocRef => {
-          console.log("Value of an Existing Document Field has been updated");
-      })
-      .catch(error => {
-        console.log(error);
-      })
 
-      // this.$emit('rerender')
-      this.getCommentsData()
+      let commentsUpvoted = []
+      let commentsDownvoted = []
+
+      let userHasVotedOnThisCommentRef = doc(db, 'users', this.email);
+      let getUserVotesOnThisComment = await getDoc(userHasVotedOnThisCommentRef).then(
+        (doc) => {
+          // console.log('Document data:', doc);
+          let userInfo = doc.data();
+          // console.log('UserInfo: ', userInfo);
+          commentsUpvoted = userInfo['CommentsUserUpvoted'];
+          console.log('commentsUpvoted: ', commentsUpvoted);
+          commentsDownvoted = userInfo['CommentsUserDownvoted'];
+          console.log('commentsDownvoted: ', commentsDownvoted);
+          // console.log('userStarredResumes: ', userStarredResumes);
+        })
 
 
+      if (commentsUpvoted.includes(resume_id)) {
+        // console.log('user has already starred this resume');
+        commentsUpvoted = commentsUpvoted.filter(item => item !== resume_id)
 
-    },
+        let updateUpvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserUpvoted: commentsUpvoted,
+      });
 
-    async downvoteComment(resume_id, comment_id) {
-      let commentsDocRef = doc(db, "ResumeInfo", resume_id, "Comments", comment_id);
-      let commentDocSnap = await getDoc(commentsDocRef)
-      let commentData = commentDocSnap.data()
-      let downvotes = commentData['Number_Of_Downvotes']
-      const newUpvote = {
-        Number_Of_Downvotes: downvotes + 1,
-      };
-      updateDoc(commentsDocRef, newUpvote)
+        let upvotes = commentData['Number_Of_Upvotes']
+        const newUpvote = {
+          Number_Of_Upvotes: upvotes - 1,
+        };
+        updateDoc(commentsDocRef, newUpvote)
         .then(commentsDocRef => {
-          console.log("Value of an Existing Document Field has been updated");
+            console.log("User's upvote has been removed");
+        })
+        .catch(error => {
+          console.log(error);
+      })
+
+        // this.forceRerender()
+        // this.getCommentsData()
+        // this.values = this.values
+        // this.categories = this.categories
+      }
+      else if (commentsDownvoted.includes(resume_id)) {
+        commentsDownvoted = commentsDownvoted.filter(item => item !== resume_id)
+        commentsUpvoted.push(resume_id)
+
+        let upvotes = commentData['Number_Of_Upvotes']
+        const newUpvote = {
+          Number_Of_Upvotes: upvotes + 1,
+        };
+        updateDoc(commentsDocRef, newUpvote)
+        .then(commentsDocRef => {
+            console.log("User's upvote has been added");
         })
         .catch(error => {
           console.log(error);
         })
 
+        let downvotes = commentData['Number_of_Downvotes']
+        const newDownvote = {
+          Number_of_Downvotes: downvotes - 1,
+        };
+        updateDoc(commentsDocRef, newDownvote)
+        .then(commentsDocRef => {
+            console.log("User's downvote has been removed");
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
+        let updateUpvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserUpvoted: commentsUpvoted,
+      });
+      // this.forceRerender()
+      }
+      else {
+        let upvotes = commentData['Number_Of_Upvotes']
+        const newUpvote = {
+          Number_Of_Upvotes: upvotes + 1,
+        };
+        updateDoc(commentsDocRef, newUpvote)
+        .then(commentsDocRef => {
+            console.log("User's upvote has been added");
+        })
+        .catch(error => {
+          console.log(error);
+      })
+        commentsUpvoted.push(resume_id)
+        let updateUpvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserUpvoted: commentsUpvoted,
+      });
+      // this.forceRerender()
+      }
+
       // this.$emit('rerender')
       this.getCommentsData()
+      this.values = this.values
+      this.categories = this.categories
+      // this.categorizeComment(allComments, cat)
+      // this.forceRerender()
+
+
+
+    },
+
+    async downvoteComment(resume_id, comment_id, userHasUpvotedThisComment, userHasDownvotedThisComment) {
+      let commentsDocRef = doc(db, "ResumeInfo", resume_id, "Comments", comment_id);
+      let commentDocSnap = await getDoc(commentsDocRef)
+      let commentData = commentDocSnap.data()
+
+      let commentsUpvoted = []
+      let commentsDownvoted = []
+
+      let userHasVotedOnThisCommentRef = doc(db, 'users', this.email);
+      let getUserVotesOnThisComment = await getDoc(userHasVotedOnThisCommentRef).then(
+        (doc) => {
+          // console.log('Document data:', doc);
+          let userInfo = doc.data();
+          // console.log('UserInfo: ', userInfo);
+          commentsUpvoted = userInfo['CommentsUserUpvoted'];
+          console.log('commentsUpvoted: ', commentsUpvoted);
+          commentsDownvoted = userInfo['CommentsUserDownvoted'];
+          console.log('commentsDownvoted: ', commentsDownvoted);
+          // console.log('userStarredResumes: ', userStarredResumes);
+        })
+
+
+      if (commentsDownvoted.includes(resume_id)) {
+        // console.log('user has already starred this resume');
+        commentsDownvoted = commentsDownvoted.filter(item => item !== resume_id)
+
+        let updateDownvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserDownvoted: commentsDownvoted,
+      });
+
+        let downvotes = commentData['Number_of_Downvotes']
+        const newDownvote = {
+          Numberof_Downvotes: downvotes - 1,
+        };
+        updateDoc(commentsDocRef, newDownvote)
+        .then(commentsDocRef => {
+            console.log("User's downvote has been removed");
+        })
+        .catch(error => {
+          console.log(error);
+      })
+
+        // this.forceRerender()
+        // this.getCommentsData()
+        // this.values = this.values
+        // this.categories = this.categories
+      }
+      else if (commentsDownvoted.includes(resume_id)) {
+        commentsDownvoted = commentsDownvoted.filter(item => item !== resume_id)
+        commentsUpvoted.push(resume_id)
+
+        let downvotes = commentData['Number_of_Downvotes']
+        const newDownvote = {
+          Number_of_Downvotes: downvotes + 1,
+        };
+        updateDoc(commentsDocRef, newDownvote)
+        .then(commentsDocRef => {
+            console.log("User's upvote has been added");
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
+        let upvotes = commentData['Number_Of_Upvotes']
+        const newUpvote = {
+          Number_Of_Upvotes: upvotes - 1,
+        };
+        updateDoc(commentsDocRef, newUpvote)
+        .then(commentsDocRef => {
+            console.log("User's downvote has been removed");
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
+        let updateDownvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserDownvoted: commentsDownvoted,
+      });
+      // this.forceRerender()
+      }
+      else {
+        let downvotes = commentData['Number_of_Downvotes']
+        const newDownvote = {
+          Number_of_Downvotes: downvotes + 1,
+        };
+        updateDoc(commentsDocRef, newDownvote)
+        .then(commentsDocRef => {
+            console.log("User's upvote has been added");
+        })
+        .catch(error => {
+          console.log(error);
+      })
+        commentsDownvoted.push(resume_id)
+        let updateDownvotedComments = await updateDoc(userHasVotedOnThisCommentRef, {
+          CommentsUserDownvoted: commentsDownvoted,
+      });
+      // this.forceRerender()
+      }
+
+      // this.$emit('rerender')
+      this.getCommentsData()
+      this.values = this.values
+      this.categories = this.categories
+      // this.categorizeComment(allComments, cat)
+      // this.forceRerender()
+
 
 
     },
@@ -331,9 +527,9 @@ export default {
     },
 
     forceRerender() {
-      // this.componentKey += 1;
+      this.componentKey += 1;
       // this.$emit('rerender')
-      this.getCommentsData()
+      // this.getCommentsData()
     }
 
    
