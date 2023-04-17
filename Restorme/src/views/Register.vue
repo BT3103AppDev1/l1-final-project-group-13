@@ -26,11 +26,7 @@
     </div>
     <div class="loginBackgroundContainer">
       <div id="backgroundImage">
-        <img
-          src="../assets/login background.png"
-          alt="Login Background"
-          id="backgroundImage"
-        />
+        <img src="../assets/login_background.png" id="backgroundImage" />
       </div>
     </div>
   </div>
@@ -68,6 +64,8 @@ const register = async () => {
           Experience: null,
           SocialMediaLinks: null,
           StarredResumes: [],
+          CommentsUserUpvoted: [],
+          CommentsUserDownvoted: [],
         });
         console.log('Document written with ID: ', docRef.id);
       } catch (e) {

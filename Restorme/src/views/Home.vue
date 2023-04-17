@@ -128,6 +128,7 @@ export default {
       this.resumeButtons = await Promise.all(
         docList.items.map(async (documentRef) => {
           let name = documentRef.name;
+          console.log('Name: ', name);
           this.numOfResumesUploaded += 1;
           const resumeDoc = doc(db, 'ResumeInfo', name);
           let resumeTitle = '';
@@ -135,6 +136,7 @@ export default {
             console.log('Document data:', doc);
             let resumeInfo = doc.data();
             console.log('ResumeInfo: ', resumeInfo);
+            console.log("ResumeInfo['Title']: ", resumeInfo['Title']);
             resumeTitle = resumeInfo['Title'];
           });
           return { name, documentRef, resumeTitle };

@@ -30,7 +30,7 @@
     <div class="loginBackgroundContainer">
       <div id="backgroundImage">
         <img
-          src="../assets/login background.png"
+          src="../assets/login_background.png"
           alt="Login Background"
           id="backgroundImage"
         />

@@ -41,18 +41,17 @@ const routes = [
     name: 'UploadResumes',
     component: () => import('@/views/UploadResumes.vue'),
   },
-  {
-    path: '/OtherProfile/:testData',
-    name: 'OtherProfile',
-    component: () => import('@/views/OtherProfile.vue'),
-  },
-  
+  // {
+  //   path: '/OtherProfile/:testData',
+  //   name: 'OtherProfile',
+  //   component: () => import('@/views/OtherProfile.vue'),
+  // },
+
   //{
   //  path: '/previewer',
   //  name: 'Previewer',
   //  component: () => import('@/views/Previewer.vue'),
   //},
-
 
   // {
   //   path: '/resumeCommentDisplay',

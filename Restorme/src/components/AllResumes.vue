@@ -35,7 +35,7 @@
                     <button
                       v-on:click="addToUserStarredResumes(value.resume_id)"
                     >
-                      <img src="../assets/empty star.png" id="star" />
+                      <img src="../assets/empty_star.png" id="star" />
                     </button>
                   </div>
                   <div
@@ -45,7 +45,7 @@
                     <button
                       v-on:click="removeFromUserStarredResumes(value.resume_id)"
                     >
-                      <img src="../assets/yellow star.png" id="star" />
+                      <img src="../assets/yellow_star.png" id="star" />
                     </button>
                   </div>
                 </div>
@@ -101,7 +101,7 @@
                           removeFromUserStarredResumes(value.resume_id)
                         "
                       >
-                        <img src="../assets/yellow star.png" id="star" />
+                        <img src="../assets/yellow_star.png" id="star" />
                       </button>
                     </div>
                   </div>
