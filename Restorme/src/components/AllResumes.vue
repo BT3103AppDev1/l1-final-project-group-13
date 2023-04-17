@@ -146,7 +146,12 @@
       </div>
     </div>
     <!-- <div id="commentsContainer">Comments</div> -->
-    <component v-bind:is="component" v-bind:resume_id ='this.resume_id' :key="componentKey" @rerender="forceRerender()" ></component>
+    <component
+      v-bind:is="component"
+      v-bind:resume_id="this.resume_id"
+      :key="componentKey"
+      @rerender="forceRerender()"
+    ></component>
   </div>
 </template>
 
@@ -169,7 +174,7 @@ export default {
   name: 'AllResumes',
   components: {
     VuePdfEmbed,
-    "comment": Comment,
+    comment: Comment,
   },
   data() {
     return {
@@ -326,7 +331,7 @@ export default {
       this.resumeUserEmail = email;
       console.log('resumeToBeDisplayed = ', this.resume_id);
       this.downloadDoc(this.resumeUserEmail, this.resume_id);
-      this.component = "comment"
+      this.component = 'comment';
       // this.$emit('resumeClicked', resume_id);
       // this.$router.push('/resumeCommentDisplay');
       this.component = 'comment';
@@ -347,9 +352,9 @@ export default {
           console.error('error getting url:', error);
         });
     },
-    forceRerender() {
-      this.componentKey += 1;
-    },
+    // forceRerender() {
+    //   this.componentKey += 1;
+    // },
   },
 };
 </script>
@@ -371,18 +376,17 @@ export default {
 .container {
   margin-left: 5%;
   margin-top: 1%;
-  background-color: #ffffff ;
+  background-color: #ffffff;
   border-width: 0.5%;
   border-style: solid;
   width: 65%;
   position: fixed;
-  border-color:#2b6777;
+  border-color: #2b6777;
 }
 
 .topFilterBar {
   border-bottom-style: solid;
-  border-color:#2b6777;
-  
+  border-color: #2b6777;
 }
 
 .scrollView {
@@ -400,7 +404,7 @@ export default {
 }
 .resumeContainer {
   border-bottom-style: solid;
-  border-color:#2b6777;
+  border-color: #2b6777;
   margin-right: 5%;
 }
 
@@ -443,7 +447,7 @@ export default {
 
 #title {
   /* font-family: Helvetica;*/
-  font-weight: normal; 
+  font-weight: normal;
   text-decoration: underline;
   font-size: 150%;
   color: #2b6777;
@@ -455,13 +459,13 @@ export default {
 }
 
 #resumeLink {
-  background-color:#ffffff;
+  background-color: #ffffff;
   border: none;
   width: 100%;
 }
 
 #resumeLink:hover {
-  background-color:#f2f2f2;
+  background-color: #f2f2f2;
 }
 
 .tagsContainer {
@@ -475,7 +479,7 @@ export default {
   margin-right: 10%;
   height: 50px;
   padding: 0.5%;
-  background-color:#52ab98;
+  background-color: #52ab98;
   color: #ffffff;
 }
 

@@ -249,7 +249,8 @@ export default {
       catch (error) {
         console.error("Error adding document: ", error);
       }
-      this.$emit('rerender');
+      // this.$emit('rerender');
+      this.getCommentsData()
 
     },
 
@@ -269,7 +270,8 @@ export default {
         console.log(error);
       })
 
-      this.$emit('rerender')
+      // this.$emit('rerender')
+      this.getCommentsData()
 
 
 
@@ -291,8 +293,8 @@ export default {
           console.log(error);
         })
 
-      this.$emit('rerender')
-
+      // this.$emit('rerender')
+      this.getCommentsData()
 
 
     },
@@ -317,7 +319,9 @@ export default {
     },
 
     forceRerender() {
-      this.componentKey += 1;
+      // this.componentKey += 1;
+      // this.$emit('rerender')
+      this.getCommentsData()
     }
 
    
