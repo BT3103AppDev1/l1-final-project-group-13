@@ -34,10 +34,10 @@ export default {
           href: '/resumes',
           title: 'Resumes',
         },
-        {
-          href: '/help',
-          title: 'Help',
-        },
+        // {
+        //   href: '/help',
+        //   title: 'Help',
+        // },
         {
           href: '/uploadResumes',
           title: 'Upload',

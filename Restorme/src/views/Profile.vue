@@ -4,36 +4,39 @@
       <SidebarRouter />
     </div>
     <div id="contentContainer">
-      <h2 style="align-self: self-start;"> Account Settings</h2>
+      <h2 style="align-self: self-start">Account Settings</h2>
       <div id="formContainer">
-      <form id="profile_form">
-        <div class="input">
-          <label for="name">Name:</label>
-          <input type="text" id="name" v-model="name" />
-        </div>
-        <br>
-        <div class="input">
-          <label for="age">Age:</label>
-          <input type="text" id="age" v-model="age" />
-        </div>
-        <br>
-        <div id="bioInput">
-          <label for="biography">Biography:</label>
-          <textarea type="text" id="biography" v-model="biography"> </textarea>
-        </div>
-        <br>
-        <div class="input">
-          <label for="experience">Experience:</label>
-          <input type="text" id="experience" v-model="experience" />
-        </div>
-      </form>
+        <form id="profile_form">
+          <div class="input">
+            <label for="name">Name:</label>
+            <input type="text" id="name" v-model="name" />
+          </div>
+          <br />
+          <div class="input">
+            <label for="age">Age:</label>
+            <input type="text" id="age" v-model="age" />
+          </div>
+          <br />
+          <div id="bioInput">
+            <label for="biography">Biography:</label>
+            <textarea type="text" id="biography" v-model="biography">
+            </textarea>
+          </div>
+          <br />
+          <div class="input">
+            <label for="experience">Experience:</label>
+            <input type="text" id="experience" v-model="experience" />
+          </div>
+        </form>
       </div>
       <!-- <div class="input">
         <label for="socMedia">Social Media Links:</label>
         <input type="text" id="socMedia" v-model="socMedia" />
       </div> -->
 
-      <button type="button" id="submitButton" v-on:click="save"> Save Changes </button>
+      <button type="button" id="submitButton" v-on:click="save">
+        Save Changes
+      </button>
     </div>
   </div>
 </template>
@@ -41,7 +44,16 @@
 <script>
 import SidebarRouter from '../components/SidebarRouter.vue';
 import { db } from '../firebase';
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from '@firebase/firestore';
 import { async } from '@firebase/util';
 import { onAuthStateChanged } from '@firebase/auth';
 import { auth } from '../firebase';
@@ -55,8 +67,8 @@ export default {
   data() {
     return {
       user: false,
-      email: "",
-      user_id: "",
+      email: '',
+      user_id: '',
     };
   },
 
@@ -65,18 +77,17 @@ export default {
       if (user) {
         this.user = user;
         this.email = user.email;
-        console.log(user.email)
-        const userNameRef = await getDoc(doc(db, "users", user.email))
-        console.log(userNameRef.data())
-        const userName = userNameRef.data().Name
-        const age = userNameRef.data().Age
-        const biography = userNameRef.data().Biography
-        const experience = userNameRef.data().Experience
-        document.getElementById("name").placeholder = String(userName)
-        document.getElementById("age").placeholder = String(age) 
-        document.getElementById("biography").placeholder = String(biography) 
-        document.getElementById("experience").placeholder = String(experience) 
-
+        console.log(user.email);
+        const userNameRef = await getDoc(doc(db, 'users', user.email));
+        console.log(userNameRef.data());
+        const userName = userNameRef.data().Name;
+        const age = userNameRef.data().Age;
+        const biography = userNameRef.data().Biography;
+        const experience = userNameRef.data().Experience;
+        document.getElementById('name').placeholder = String(userName);
+        document.getElementById('age').placeholder = String(age);
+        document.getElementById('biography').placeholder = String(biography);
+        document.getElementById('experience').placeholder = String(experience);
       } else {
         this.user = false;
       }
@@ -84,38 +95,36 @@ export default {
   },
   methods: {
     async save() {
-
-
       // save the user details to firestore database
 
-      let name = document.getElementById("name").value;
-      let age = document.getElementById("age").value;
-      let biography = document.getElementById("biography").value;
-      let experience = document.getElementById("experience").value;
+      let name = document.getElementById('name').value;
+      let age = document.getElementById('age').value;
+      let biography = document.getElementById('biography').value;
+      let experience = document.getElementById('experience').value;
       //let socMedia = document.getElementById("socMedia").value;
-      
 
       const user_email = String(this.email);
       console.log(user_email);
 
-      alert(" Saving your data for this user:" + name + age + biography + experience);
+      alert(
+        ' Saving your data for this user:' + name + age + biography + experience
+      );
 
       try {
-        const docRef = await updateDoc(doc(db, "users", user_email), {
-          User: name,
+        const docRef = await updateDoc(doc(db, 'users', user_email), {
+          Name: name,
           Age: age,
           Biography: biography,
           Experience: experience,
           //SocialMediaLinks: socMedia
         });
-        document.getElementById("profile_form").reset();
-        this.$emit("added");
+        document.getElementById('profile_form').reset();
+        this.$emit('added');
       } catch (error) {
-        console.error("Error adding document: ", error);
+        console.error('Error adding document: ', error);
       }
 
-      document.getElementById("savebutton").disabled = false;
-      
+      document.getElementById('savebutton').disabled = false;
     },
   },
 };
@@ -128,7 +137,7 @@ export default {
   align-items: center;
   height: 100vh;
   width: 98vw;
-  padding: 60px 25px;
+  /* padding: 60px 25px; */
 }
 #routerContainer {
   flex: 1;
@@ -164,13 +173,13 @@ export default {
   width: 100%;
 }
 
-#age{
+#age {
   padding: 10px;
   width: 100%;
 }
 
 #name {
-  padding: 10px
+  padding: 10px;
 }
 
 #bioInput {
@@ -190,7 +199,7 @@ export default {
   padding-bottom: 1%;
   padding-left: 5%;
   padding-right: 5%;
-  background-color:#52ab98;
+  background-color: #52ab98;
   color: white;
   border: none;
   border-radius: 5px;
@@ -201,6 +210,6 @@ export default {
 }
 
 textarea {
-  width: 1000px
+  width: 1000px;
 }
 </style>
