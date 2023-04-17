@@ -217,7 +217,6 @@ h3 {
   flex: 0.2;
   /* background-color: rgb(255, 0, 0); */
   display: flex;
-  margin-top: 
 }
 
 #resumeHeader {

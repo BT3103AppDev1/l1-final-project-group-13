@@ -13,9 +13,9 @@
         <li v-for = "value in categorizeComment(values, cat)" key: value.comment_id>
       <div id="comment">
         <div id="votesContainer">
-          <div class="vote">+</div>
-          <div class="voteCount">3</div>
-          <div class="vote">-</div>
+          <div class="vote" v-on:click = "upvoteComment(resume_id, value.comment_id)">+</div>
+          <div class="voteCount">{{ value.upvotes - value.downvotes }}</div>
+          <div class="vote" v-on:click = "downvoteComment(resume_id, value.comment_id)" >-</div>
         </div>
         <div id = "commentContentsContainer">
           <div id="commentsTopHalfContent">
@@ -98,7 +98,7 @@
 <script>
 import { auth } from "../firebase";
 import { db } from "../firebase";
-import { addDoc, collection, doc, setDoc, updateDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import ReplyInput from "./ReplyInput.vue";
@@ -250,6 +250,50 @@ export default {
         console.error("Error adding document: ", error);
       }
       this.$emit('rerender');
+
+    },
+
+    async upvoteComment(resume_id, comment_id) {
+      let commentsDocRef = doc(db, "ResumeInfo", resume_id, "Comments", comment_id);
+      let commentDocSnap = await getDoc(commentsDocRef)
+      let commentData = commentDocSnap.data()
+      let upvotes = commentData['Number_Of_Upvotes']
+      const newUpvote = {
+        Number_Of_Upvotes: upvotes + 1,
+      };
+      updateDoc(commentsDocRef, newUpvote)
+      .then(commentsDocRef => {
+          console.log("Value of an Existing Document Field has been updated");
+      })
+      .catch(error => {
+        console.log(error);
+      })
+
+      this.$emit('rerender')
+
+
+
+    },
+
+    async downvoteComment(resume_id, comment_id) {
+      let commentsDocRef = doc(db, "ResumeInfo", resume_id, "Comments", comment_id);
+      let commentDocSnap = await getDoc(commentsDocRef)
+      let commentData = commentDocSnap.data()
+      let downvotes = commentData['Number_Of_Downvotes']
+      const newUpvote = {
+        Number_Of_Downvotes: downvotes + 1,
+      };
+      updateDoc(commentsDocRef, newUpvote)
+        .then(commentsDocRef => {
+          console.log("Value of an Existing Document Field has been updated");
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
+      this.$emit('rerender')
+
+
 
     },
 

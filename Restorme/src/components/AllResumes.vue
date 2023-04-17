@@ -51,7 +51,8 @@
         <vue-pdf-embed :source="pdfSource" ref="pdfEmbed" />
       </div>
     </div>
-    <div id="commentsContainer">Comments</div>
+    <!-- <div id="commentsContainer">Comments</div> -->
+    <component v-bind:is="component" v-bind:resume_id ='this.resume_id' :key="componentKey" @rerender="forceRerender()" ></component>
   </div>
 </template>
 
@@ -63,12 +64,14 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import VuePdfEmbed from 'vue-pdf-embed';
 import { storage } from '../firebase';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
+import Comment from '../components/Comment.vue';
 
 export default {
   name: 'AllResumes',
   components: {
     PerfectScrollbar,
     VuePdfEmbed,
+    "comment": Comment,
   },
   data() {
     return {
@@ -78,6 +81,8 @@ export default {
       resume_id: null,
       pdfSource: null,
       resumeUserEmail: null,
+      component: null,
+      componentKey: 0,
     };
   },
   mounted() {
@@ -130,6 +135,7 @@ export default {
       this.resumeUserEmail = email;
       console.log('resumeToBeDisplayed = ', this.resume_id);
       this.downloadDoc(this.resumeUserEmail, this.resume_id);
+      this.component = "comment"
       // this.$emit('resumeClicked', resume_id);
       // this.$router.push('/resumeCommentDisplay');
     },
@@ -147,6 +153,9 @@ export default {
         .catch((error) => {
           console.error('error getting url:', error);
         });
+    },
+    forceRerender() {
+      this.componentKey += 1;
     },
   },
 };
@@ -169,15 +178,18 @@ export default {
 .container {
   margin-left: 5%;
   margin-top: 1%;
-  background-color: rgb(248, 248, 246);
+  background-color: #ffffff ;
   border-width: 0.5%;
   border-style: solid;
   width: 65%;
   position: fixed;
+  border-color:#2b6777;
 }
 
 .topFilterBar {
   border-bottom-style: solid;
+  border-color:#2b6777;
+  
 }
 
 .scrollView {
@@ -194,6 +206,7 @@ export default {
 }
 .resumeContainer {
   border-bottom-style: solid;
+  border-color:#2b6777;
   margin-right: 5%;
 }
 
@@ -215,10 +228,26 @@ export default {
 }
 
 #title {
-  font-family: Helvetica;
-  font-weight: normal;
+  /* font-family: Helvetica;*/
+  font-weight: normal; 
   text-decoration: underline;
   font-size: 150%;
+  color: #2b6777;
+  /* border-style: ridge;
+  border-color: #2b6777; */
+  font-family: 'Montserrat', sans-serif;
+  font-size: 25px;
+  /* font-weight: bold; */
+}
+
+#resumeLink {
+  background-color:#ffffff;
+  border: none;
+  width: 100%;
+}
+
+#resumeLink:hover {
+  background-color:#f2f2f2;
 }
 
 .tagsContainer {
@@ -232,17 +261,19 @@ export default {
   margin-right: 10%;
   height: 50px;
   padding: 0.5%;
-  background-color: rgb(250, 239, 139);
+  background-color:#52ab98;
+  color: #ffffff;
 }
 
 .uploadDetails {
   width: 16%;
   padding-right: 2%;
   padding-left: 2%;
+  padding-top: 2%;
   font-size: 90%;
   height: 100%;
   border-radius: 12px;
-  background-color: rgb(231, 228, 217);
+  background-color: #c8d8e4;
   margin-left: 30%;
 }
 
