@@ -132,7 +132,7 @@ export default {
           this.pdfSource = url;
           this.resumeID = documentRef.name;
           this.component = 'comment';
-          console.log('ResumeID = ', this.resumeID);
+          // console.log('ResumeID = ', this.resumeID);
           this.forceRerender();
         })
         .catch((error) => {

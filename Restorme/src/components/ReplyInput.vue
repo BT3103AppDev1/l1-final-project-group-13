@@ -117,7 +117,7 @@ export default {
       } catch (error) {
         console.error('Error adding document: ', error);
       }
-      this.$emit('rerender');
+      this.$emit('rerenderComment');
     },
   },
 };

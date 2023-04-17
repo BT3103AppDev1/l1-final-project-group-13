@@ -218,7 +218,7 @@ export default {
           let additionalInfo = documentData['Additional Info'];
           // console.log(name);
           let title = documentData['Title'];
-          console.log(title);
+          // console.log(title);
           let role = documentData['Role'];
           let location = documentData['Location'];
           let experience = documentData['Experience'];
@@ -232,11 +232,11 @@ export default {
           let userStarredResumesRef = doc(db, 'users', this.email);
           let getUserStarredResumes = await getDoc(userStarredResumesRef).then(
             (doc) => {
-              console.log('Document data:', doc);
+              // console.log('Document data:', doc);
               let userInfo = doc.data();
-              console.log('UserInfo: ', userInfo);
+              // console.log('UserInfo: ', userInfo);
               let userStarredResumes = userInfo['StarredResumes'];
-              console.log('userStarredResumes: ', userStarredResumes);
+              // console.log('userStarredResumes: ', userStarredResumes);
               userHasStarredThisResume = userStarredResumes.includes(resume_id);
               if (userHasStarredThisResume === true) {
                 this.numberOfStarredResumes++;
@@ -287,7 +287,7 @@ export default {
       );
 
       if (userStarredResumesArray.includes(resumeID)) {
-        console.log('user has already starred this resume');
+        // console.log('user has already starred this resume');
         this.getdummyData();
         this.values = this.values;
         this.numberOfStarredResumes = this.numberOfStarredResumes;
@@ -298,7 +298,7 @@ export default {
       let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
         StarredResumes: userStarredResumesArray,
       });
-      console.log('added to user starred history');
+      // console.log('added to user starred history');
       this.getdummyData();
       this.values = this.values;
       this.numberOfStarredResumes = this.numberOfStarredResumes;
@@ -320,16 +320,16 @@ export default {
       let updateUserStarredResumes = await updateDoc(userStarredResumesRef, {
         StarredResumes: userStarredResumesArray,
       });
-      console.log('removed from user starred history');
+      // console.log('removed from user starred history');
       this.getdummyData();
       this.values = this.values;
       this.numberOfStarredResumes = this.numberOfStarredResumes;
     },
     showResume(resume_id, email) {
-      console.log('resumeid = ', resume_id);
+      // console.log('resumeid = ', resume_id);
       this.resume_id = resume_id;
       this.resumeUserEmail = email;
-      console.log('resumeToBeDisplayed = ', this.resume_id);
+      // console.log('resumeToBeDisplayed = ', this.resume_id);
       this.downloadDoc(this.resumeUserEmail, this.resume_id);
       this.component = 'comment';
       // this.$emit('resumeClicked', resume_id);
@@ -459,9 +459,11 @@ export default {
 }
 
 #resumeLink {
-  background-color: #ffffff;
+  background-color: #e8e8e8;
   border: none;
   width: 100%;
+  border-radius: 20px;
+  font-size: 110%;
 }
 
 #resumeLink:hover {
@@ -478,7 +480,7 @@ export default {
   border-radius: 12px;
   margin-right: 10%;
   height: 50px;
-  padding: 0.5%;
+  padding: 1%;
   background-color: #52ab98;
   color: #ffffff;
 }

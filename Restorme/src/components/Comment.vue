@@ -70,7 +70,7 @@
       <div class="formli">
 
         <label for="commentType">Category:</label>
-        <select id="category" v-model="selected">
+        <select id="category" v-model="selected" required>
           <option disabled value="">Please Select a Category</option>
           <option>General</option>
           <option>Education</option>
@@ -211,6 +211,10 @@ export default {
       let comment = document.getElementById("descriptionBox").value;
       let category = document.getElementById("category");
       let categoryValue = category.value
+      if (category.selectedIndex === -1) {
+        alert("Please select a category")
+        return
+      }
       let categoryText = category.options[category.selectedIndex].text;
 
       let currentdate = new Date();
@@ -227,9 +231,17 @@ export default {
       let markedUseful = false;
       let replies = "to be confirmed";
 
+      // if (category.selectedIndex === -1) {
+      //   alert("Please select a category")
+      //   return
+      // }
+    
+      if (comment == "") {
+        alert("Please enter a comment")
+        return
+      }
 
-      alert(" Saving your data for Comment : " + comment + categoryText + dateTime +
-        userUID + upvotesNum + downvotesNum + markedUseful + replies)
+      alert(" Your comment has been saved! ")
 
       try {
         const docRef = await addDoc(collection(db, "ResumeInfo", resume_ID, "Comments"), {
@@ -260,7 +272,7 @@ export default {
       let commentData = commentDocSnap.data()
       let upvotes = commentData['Number_Of_Upvotes']
       const newUpvote = {
-        Number_Of_Upvotes: upvotes + 1,
+        Number_of_Upvotes: upvotes + 1,
       };
       updateDoc(commentsDocRef, newUpvote)
       .then(commentsDocRef => {

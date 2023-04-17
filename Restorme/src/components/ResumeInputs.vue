@@ -13,6 +13,7 @@
             type="text"
             name="title"
             placeholder="Type here"
+            required=""
           />
           <br />
           <label class="resumeLabels" for="role">Role </label> <br />
@@ -22,6 +23,7 @@
             type="text"
             name="role"
             placeholder="Type here"
+            required=""
           />
           <br />
           <label class="resumeLabels" for="location">Location </label> <br />
@@ -31,20 +33,24 @@
             type="text"
             name="location"
             placeholder="Type here"
+            required=""
           />
           <br />
-          <label class="resumeLabels" for="experience">Experience Level </label>
+          <label class="resumeLabels" for="experience"
+            >Years of Experience
+          </label>
           <br />
           <input
             id="experience1"
             class="resumeInput"
-            type="text"
+            type="number"
             name="experience"
             placeholder="Type here"
+            required=""
           />
           <br />
           <label class="resumeLabels" for="additionalInfo"
-            >Additional Information
+            >Additional Information (Optional)
           </label>
           <br />
           <input
@@ -79,23 +85,20 @@
 
 <script>
 // import { dummy_data } from "../data/ResumeData";
-import { db, storage } from "../firebase.js";
-import {
-  doc,
-  setDoc,
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from '../firebase.js';
+import { doc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-import "firebase/storage";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import exp from "constants";
+import 'firebase/storage';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import exp from 'constants';
 
 export default {
   data() {
     return {
       user: false,
-      email: "",
-      user_id: "",
+      email: '',
+      user_id: '',
     };
   },
 
@@ -114,8 +117,8 @@ export default {
   methods: {
     generateRandomId() {
       const randomChars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      let result = "";
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
       for (let i = 0; i < 10; i++) {
         result += randomChars.charAt(
           Math.floor(Math.random() * randomChars.length)
@@ -128,44 +131,56 @@ export default {
       const uniqueId = this.generateRandomId();
 
       // handle the pdf
-      const refToUserEmail = "gs://restorme-cf3da.appspot.com/" + this.email;
+      const refToUserEmail = 'gs://restorme-cf3da.appspot.com/' + this.email;
       console.log(refToUserEmail);
 
-      const path = String(this.email) + "/" + String(uniqueId);
+      const path = String(this.email) + '/' + String(uniqueId);
 
       const storageRef = ref(storage, path);
+
+      if (this.$refs.pdfFile.files.length === 0) {
+        alert('Please upload a PDF file!');
+        return;
+      }
+
       uploadBytes(storageRef, this.$refs.pdfFile.files[0]).then((snapshot) => {
-        console.log("uploaded!");
+        console.log('uploaded!');
       });
 
       // save the resume details to firestore database
 
-      let title = document.getElementById("title1").value;
-      let role = document.getElementById("role1").value;
-      let location = document.getElementById("location1").value;
-      let experience = document.getElementById("experience1").value;
-      let additionalInfo = document.getElementById("additionalinfo1").value;
+      let title = document.getElementById('title1').value;
+      let role = document.getElementById('role1').value;
+      let location = document.getElementById('location1').value;
+      let experience = document.getElementById('experience1').value;
+
+      if (title === '' || role === '' || location === '' || experience === '') {
+        alert('Please fill in all the compulsory fields!');
+        return;
+      }
+
+      let additionalInfo = document.getElementById('additionalinfo1').value;
       let currentdate = new Date();
       let dateTime =
         currentdate.getDate() +
-        "/" +
+        '/' +
         (currentdate.getMonth() + 1) +
-        "/" +
+        '/' +
         currentdate.getFullYear() +
-        " @ " +
+        ' @ ' +
         currentdate.getHours() +
-        ":" +
+        ':' +
         currentdate.getMinutes() +
-        ":" +
+        ':' +
         currentdate.getSeconds();
 
       const user_email = String(this.email);
       console.log(user_email);
 
-      alert(" Saving your data for this resume with this ID: " + uniqueId);
+      alert(' Saving your data for this resume with this ID: ' + uniqueId);
 
       try {
-        const docRef = await setDoc(doc(db, "ResumeInfo", uniqueId), {
+        const docRef = await setDoc(doc(db, 'ResumeInfo', uniqueId), {
           Title: title,
           Role: role,
           Location: location,
@@ -175,13 +190,13 @@ export default {
           Date: dateTime,
           Email: this.email,
         });
-        document.getElementById("resume_form").reset();
-        this.$emit("added");
+        document.getElementById('resume_form').reset();
+        this.$emit('added');
       } catch (error) {
-        console.error("Error adding document: ", error);
+        console.error('Error adding document: ', error);
       }
 
-      document.getElementById("savebutton").disabled = false;
+      document.getElementById('savebutton').disabled = false;
     },
   },
 };
@@ -253,7 +268,7 @@ form {
 }
 
 .pdfDropBox {
-  background-color:  #c8d8e4;;
+  background-color: #c8d8e4;
   width: 100%;
   text-align: center;
   border-radius: 0.5%;
@@ -288,7 +303,7 @@ form {
   padding-bottom: 1%;
   padding-left: 5%;
   padding-right: 5%;
-  background-color:#52ab98;
+  background-color: #52ab98;
   color: white;
   border: none;
   border-radius: 5px;
@@ -296,9 +311,8 @@ form {
   cursor: pointer;
 }
 
-
 #submitButton:hover {
-  background-color:  #3f7d70;;
+  background-color: #3f7d70;
 }
 
 #submitContainer {
